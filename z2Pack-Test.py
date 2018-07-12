@@ -28,7 +28,7 @@ def hamiltonian1(k):
 
 
 System0 = z2pack.hm.System(hamiltonian0, bands=1)
-System1 = z2pack.hm.System(hamiltonian1, bands=2)
+System1 = z2pack.hm.System(hamiltonian1)
 sph = z2pack.shape.Sphere([0, 0, 0], 0.01)
 res0 = z2pack.surface.run(system=System0, surface=sph, num_lines=21)
 res1 = z2pack.surface.run(system=System1, surface=sph)
@@ -49,6 +49,7 @@ ax[1].set_title(r'$(k_x, -k_y, k_z).\vec{\sigma}$', fontsize=fs)
 
 # plotting the evolution of polarization
 z2pack.plot.chern(res0, axis=ax[0])
+# z2pack.plot.wcc(res0, axis=ax[1])
 z2pack.plot.chern(res1, axis=ax[1])
 plt.show()
 
