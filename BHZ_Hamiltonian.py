@@ -24,7 +24,7 @@ def BHZ(M, B):
         return (C-D*(kx*kx+ky*ky))*np.identity(2)+A*kx*pauli_x+A*ky*pauli_y+(M-B*(kx*kx+ky*ky))*pauli_z
     # print(h([0, 0, 0]))
 
-    def hamiltonian(k0):
+    def hamiltonian(k0):        
         k = np.array(k0)
         mk = np.array([-x for x in k])
         # print(k0,mk)
