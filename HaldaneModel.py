@@ -42,7 +42,7 @@ def get_chern(m, t1, t2, phi, **settings):
     z2pack.plot.chern(res, axis=ax[0])
     z2pack.plot.wcc(res, axis=ax[1])
     plt.savefig("HaldaneModel.png")
-    print("Z2 = ", z2pack.invariant.z2(res))
+    # print("Z2 = ", z2pack.invariant.z2(res))
     return z2pack.invariant.chern(res)
 
 

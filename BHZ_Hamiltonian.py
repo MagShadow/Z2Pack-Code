@@ -9,7 +9,7 @@ pauli_y = np.array([[0, -1j], [1j, 0]], dtype=complex)
 pauli_z = np.array([[1, 0], [0, -1]], dtype=complex)
 pauli_vector = list([pauli_x, pauli_y, pauli_z])
 
-settings = {'num_lines': 101,
+settings = {'num_lines': 201,
             'pos_tol': 1e-2,
             'gap_tol': 2e-2,
             'move_tol': 0.3,
@@ -50,8 +50,10 @@ h0 = BHZ(-0.0686, -16.9)
 s0 = z2pack.hm.System(h0, dim=2)
 # sph = z2pack.shape.Sphere([0, 0, 0], 0.01)
 
+# Only Consider Half
 
-def squ(k1, k2): return np.array([k2-0.5, k1/2])
+
+def squ(k1, k2): return np.array([k2-0.5, k1/2-0.5])
 # def squ(k1, k2): return np.array([k2, k1/2])
 
 
@@ -68,7 +70,7 @@ fig, ax = plt.subplots()
 # z2pack.plot.chern(result, axis=ax[0])
 z2pack.plot.wcc(result, axis=ax)
 # ax.set_xlim(0.8, 1.01)
-ax.set_xlim(-0.01, 0.2)
+# ax.set_xlim(-0.01, 0.2)
 # ax[0].set_xlim(-1, 2)
 # ax[0].set_ylim(-1, 2)
 # ax[1].set_xlim(-1, 2)
