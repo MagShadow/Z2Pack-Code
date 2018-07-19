@@ -3,12 +3,12 @@ from scipy import linalg
 from matplotlib import pyplot as plt
 
 # Constants related to real material
-# unit of length: anstrom
+# unit of length: angstrom
 # unit of energy: eV
 A1, A2, C, D1, D2 = 2.26, 3.33, -0.0083, 5.74, 30.4
 M, B1, B2 = 0.28, 6.86, 44.5
 Delta = 3
-N = 40  # total layers in z direction
+N = 20  # total layers in z direction, 0.3nm
 
 # Prerequisite matrices
 Gzz = np.array(np.diag([D1-B1, D1+B1, D1-B1, D1+B1]), dtype=complex)
@@ -37,20 +37,20 @@ def Hamiltonian(kx, ky):
     h0[0, 3] = h0[1, 2] = A2*(kx-1.0j*ky)
     h0[3, 0] = h0[2, 1] = A2*(kx+1.0j*ky)
     zero = np.zeros([4, 4], dtype=complex)
-    print(h0)
+    # print(h0)
     hii = E_(kx, ky)*np.identity(4, dtype=complex)+2 * \
         Gzz/(Delta*Delta)+h0  # not include the U(zi)
-    print(hii)
+    # print(hii)
 
     def row(i):
         return np.column_stack([(hii if j == i else (t_m if j+1 == i else(t_p if j-1 == i else zero)))for j in range(N)])
     return np.row_stack([row(i) for i in range(N)])
 
 
-print(Hamiltonian(0.03, 0))
+# print(Hamiltonian(0.03, 0))
 # Simulation parameter, unit = 1/anstrom
 # from -xRange to xRange, etc
-xRange, yRange, Nx, Ny = 0.05, 0.05, 20, 20
+xRange, yRange, Nx, Ny = 0.1, 0.1, 50, 50
 dkx, dky = 2*xRange/Nx, 2*yRange/Ny
 bs = np.zeros([Nx+1, Ny+1, 4*N], dtype=float)
 
@@ -63,7 +63,7 @@ for i in range(Nx+1):
     # print(kx, end=", ")
     temp = np.array([x.real for x in (linalg.eig(Hamiltonian(kx, ky))[0])])
     temp.sort()
-    print(temp)
+    # print(temp)
     bs[i, j] = temp
     # print(temp)
 
@@ -73,9 +73,15 @@ Eig = [([bs[j, j0, i] for j in range(Nx+1)])for i in range(4*N)]
 
 
 plt.subplot(1, 1, 1)
-for y in Eig[2*N-1:2*N+1]:
+for y in Eig:
     plt.plot(X, y)
-plt.show()
+plt.ylim(0, 0.6)
+plt.xlim(-0.1, 0.1)
+plt.xlabel(r"$k_x(\rm \AA^{-1})$")
+plt.ylabel(r"$E(eV)$")
+
+# plt.show()
+plt.savefig("Undoped TI film D=6nm.png")
 
 ##############################################################
 # For debuging

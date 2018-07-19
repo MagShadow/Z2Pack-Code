@@ -9,7 +9,7 @@ def Hamiltonian(kx, ky):
 
 # Simulation parameter, unit = 1/anstrom
 # from -xRange to xRange, etc
-N=100
+N = 100
 xRange, yRange, Nx, Ny = 0.1, 0.1, 50, 50
 dkx, dky = 2*xRange/Nx, 2*yRange/Ny
 bs = np.zeros([Nx+1, Ny+1, 4*N], dtype=float)
