@@ -38,7 +38,7 @@ s0 = z2pack.hm.System(h0, dim=2, bands=1)
 result = z2pack.surface.run(
     system=s0,
     # parameter of surface is moduled by 2pi
-    surface=lambda k1, k2: [k2-0.5, k1-0.5],
+    surface=lambda k1, k2: [k1-0.5, k2-0.5],
     # surface=lambda k1, k2: [k2, k1/2],
     **settings
     # save_file="savefile.msgpack"
@@ -47,11 +47,10 @@ result = z2pack.surface.run(
 print("Chern=", z2pack.invariant.chern(result))
 # print("Z2=", z2pack.invariant.z2(result))
 
-fig, ax = plt.subplots(1, 2)
-z2pack.plot.chern(result, axis=ax[0])
-z2pack.plot.wcc(result, axis=ax[1])
-# ax[0].set_xlim(-1, 2)
-# ax[0].set_ylim(-1, 2)
-# ax[1].set_xlim(-1, 2)
-# ax[1].set_ylim(-1, 2)
+fig, ax = plt.subplots()
+z2pack.plot.chern(result, axis=ax)
+# z2pack.plot.wcc(res, axis=ax[1])
+ax.set_xlabel(r"$k_x$")
+ax.set_ylabel(r"$\bar{x}$")
+ax.set_title("QAH("+r"$\bf{k}\cdot\bf{p}$"+" model)")
 plt.savefig("QAH.png")
