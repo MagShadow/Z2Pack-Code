@@ -73,13 +73,13 @@ Eig = [([bs[j, j0, i] for j in range(Nx+1)])for i in range(4*N)]
 
 
 plt.subplot(1, 1, 1)
-for y in Eig:
+for y in Eig[2*N-2:2*N+2]:
     plt.plot(X, y)
-plt.ylim(0, 0.6)
-plt.xlim(-0.1, 0.1)
+plt.ylim(0.15, 0.35)
+plt.xlim(-0.05, 0.05)
 plt.xlabel(r"$k_x(\rm \AA^{-1})$")
 plt.ylabel(r"$E(eV)$")
-
+plt.title("No spin term: 4 bands")
 # plt.show()
 plt.savefig("Undoped TI film D=6nm.png")
 

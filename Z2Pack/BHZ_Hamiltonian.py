@@ -57,25 +57,46 @@ def squ(k1, k2): return np.array([k2-0.5, k1/2-0.5])
 # def squ(k1, k2): return np.array([k2, k1/2])
 
 
-result = z2pack.surface.run(
+res1 = z2pack.surface.run(
     system=s0,
-    surface=squ,  # parameter of surface is moduled by 2pi
+    # parameter of surface is moduled by 2pi
+    surface=lambda k1, k2: [k2-0.5, k1/2-0.5],
     **settings
     # save_file="savefile.msgpack"
 )
-print("Chern=", z2pack.invariant.chern(result))
+res2 = z2pack.surface.run(
+    system=s0,
+    # parameter of surface is moduled by 2pi
+    surface=lambda k1, k2: [k2-0.5, k1/2],
+    **settings
+    # save_file="savefile.msgpack"
+)
+result = z2pack.surface.run(
+    system=s0,
+    # parameter of surface is moduled by 2pi
+    surface=lambda k1, k2: [k2-0.5, k1-0.5],
+    **settings
+    # save_file="savefile.msgpack"
+)
+# print("Chern=", z2pack.invariant.chern(result))
+print("Z2_1=", z2pack.invariant.z2(res1))
+print("Z2_2=", z2pack.invariant.z2(res2))
 print("Z2=", z2pack.invariant.z2(result))
-
-fig, ax = plt.subplots()
-# z2pack.plot.chern(result, axis=ax[0])
-z2pack.plot.wcc(result, axis=ax)
-ax.set_xlabel(r"$k_x$")
-ax.set_ylabel(r"$\bar{x}$")
-ax.set_title("QSH (BHZ Hamiltonian)")
-ax.set_xlim(0.9, 1.0)
-# ax.set_xlim(-0.01, 0.2)
-# ax[0].set_xlim(-1, 2)
-# ax[0].set_ylim(-1, 2)
-# ax[1].set_xlim(-1, 2)
-# ax[1].set_ylim(-1, 2)
-plt.savefig("BHZ.png")
+fig, ax = plt.subplots(1,3)
+z2pack.plot.wcc(res1, axis=ax[0])
+z2pack.plot.wcc(res2, axis=ax[1])
+z2pack.plot.wcc(result, axis=ax[2])
+plt.savefig("BHZ-Z2test.png")
+# fig, ax = plt.subplots()
+# # z2pack.plot.chern(result, axis=ax[0])
+# z2pack.plot.wcc(result, axis=ax)
+# ax.set_xlabel(r"$k_x$")
+# ax.set_ylabel(r"$\bar{x}$")
+# ax.set_title("QSH (BHZ Hamiltonian)")
+# ax.set_xlim(0.9, 1.0)
+# # ax.set_xlim(-0.01, 0.2)
+# # ax[0].set_xlim(-1, 2)
+# # ax[0].set_ylim(-1, 2)
+# # ax[1].set_xlim(-1, 2)
+# # ax[1].set_ylim(-1, 2)
+# plt.savefig("BHZ.png")
