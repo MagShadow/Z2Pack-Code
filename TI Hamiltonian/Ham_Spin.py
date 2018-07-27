@@ -27,8 +27,8 @@ J = 0.02  # an arbitary value for spin coupling energy
 S_ = np.zeros([N, 3])
 for i in range(N):
     S_[i, 0] = 1
-    S_[i, 1] = np.pi/2
-    S_[i, 2] = np.pi/2
+    S_[i, 1] = 0
+    S_[i, 2] = 0
 
 
 S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
@@ -175,74 +175,75 @@ settings = {'num_lines': 101,
 # # print(Hamiltonian(0.03, 0))
 # # Simulation parameter, unit = 1/anstrom
 # from -xRange to xRange, etc
-xRange, yRange, Nx, Ny = 0.05, 0.05, 20, 20
+xRange, yRange, Nx, Ny = 0.05, 0.05, 50, 50
 dkx, dky = 2*xRange/Nx, 2*yRange/Ny
 bs = np.zeros([Nx+1, Ny+1, 4*N], dtype=float)
 
 # # do simulation on ky=0 line
-# ky = 0
-# j0 = j = int(Ny/2)
-# for i in range(Nx+1):
-#     # kx, ky = -xRange+dkx*i, -yRange+dky*j
-#     kx = -xRange+dkx*i
-#     # print(kx, end=", ")
-#     temp = np.array([x.real for x in (linalg.eig(Hamiltonian(kx, ky))[0])])
-#     temp.sort()
-#     # print(temp)
-#     bs[i, j] = temp
-#     # print(temp)
+ky = 0
+j0 = j = int(Ny/2)
+for i in range(Nx+1):
+    # kx, ky = -xRange+dkx*i, -yRange+dky*j
+    kx = -xRange+dkx*i
+    # print(kx, end=", ")
+    temp = np.array([x.real for x in (linalg.eig(Hamiltonian(kx, ky))[0])])
+    temp.sort()
+    # print(temp)
+    bs[i, j] = temp
+    # print(temp)
 
 # do simulation on kx-ky plane
-for i in range(Nx+1):
-    for j in range(Ny+1):
-        kx, ky = -xRange+dkx*i, -yRange+dky*j
-        temp = np.array([x.real for x in (linalg.eig(Hamiltonian(kx, ky))[0])])
-        temp.sort()
-        bs[i, j] = temp
+# for i in range(Nx+1):
+#     for j in range(Ny+1):
+#         kx, ky = -xRange+dkx*i, -yRange+dky*j
+#         temp = np.array([x.real for x in (linalg.eig(Hamiltonian(kx, ky))[0])])
+#         temp.sort()
+#         bs[i, j] = temp
 
-Eig = np.array([([([bs[i, j, n] for j in range(Ny+1)]) for i in range(Nx+1)])
-                for n in range(4*N)])
+# Eig = np.array([([([bs[i, j, n] for j in range(Ny+1)]) for i in range(Nx+1)])
+#                 for n in range(4*N)])
 
 # print(Eig)
 # print(Eig[2*N-1])
 #####################################################
 #3D plot
-X = np.linspace(-xRange, xRange, Nx+1, endpoint=True)
-Y = np.linspace(-yRange, yRange, Ny+1, endpoint=True)
-X, Y = np.meshgrid(X, Y)
-# print("X=", X)
-# print("Y=", X)
-
-fig = plt.figure()
-ax = fig.gca(projection='3d')
-for Z in Eig[2*N-2:2*N+2]:
-    # print(Z)
-    surf = ax.plot_surface(X, Y, Z,  cmap=cm.coolwarm,
-                           linewidth=0, antialiased=False)
-    
-fig.colorbar(surf, shrink=0.5, aspect=5)
-ax.zaxis.set_major_locator(LinearLocator(10))
-ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
-plt.show()
-#####################################################
-# j0 = int(Ny/2)
 # X = np.linspace(-xRange, xRange, Nx+1, endpoint=True)
-# # Eig = [([bs[j, j0, i] for j in range(Nx+1)])for i in range(4*N)]
+# Y = np.linspace(-yRange, yRange, Ny+1, endpoint=True)
+# X, Y = np.meshgrid(X, Y)
+# # print("X=", X)
+# # print("Y=", X)
+
+# fig = plt.figure()
+# ax = fig.gca(projection='3d')
+# for Z in Eig[2*N-2:2*N+2]:
+#     # print(Z)
+#     surf = ax.plot_surface(X, Y, Z,  cmap=cm.coolwarm,
+#                            linewidth=0, antialiased=False)
+    
+# fig.colorbar(surf, shrink=0.5, aspect=5)
+# ax.zaxis.set_major_locator(LinearLocator(10))
+# ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+# plt.show()
+#####################################################
+j0 = int(Ny/2)
+X = np.linspace(-xRange, xRange, Nx+1, endpoint=True)
+Eig = [([bs[j, j0, i] for j in range(Nx+1)])for i in range(4*N)]
 
 
-# plt.subplot(1, 1, 1)
-# for t in Eig[2*N-1:2*N]:
-#     print(t)
-#     y=np.array([t[i][j0] for i in range(Nx+1)])
-#     plt.plot(X, y)
-# plt.ylim(0.15, 0.35)
+plt.subplot(1, 1, 1)
+for t in Eig[2*N-2:2*N+2]:
+    print(t)
+    # y=np.array([t[i][j0] for i in range(Nx+1)])
+    # plt.plot(X, y)
+    plt.plot(X,t)
+plt.ylim(0.15, 0.35)
+plt.xlim(-0.05, 0.05)
+
+
+# plt.ylim(0.1, 0.5)
 # plt.xlim(-0.05, 0.05)
-
-
-# # plt.ylim(0.1, 0.5)
-# # plt.xlim(-0.05, 0.05)
-# plt.xlabel(r"$k_x(\rm \AA^{-1})$")
-# plt.ylabel(r"$E(eV)$")
-# # plt.title("Add spin term(y direction, j=0.02)")
-# # plt.show()
+plt.xlabel(r"$k_x(\rm \AA^{-1})$")
+plt.ylabel(r"$E(eV)$")
+plt.title("TI film: spin-z , j=0.02")
+plt.show()
 # plt.savefig("no-spin TI film D=6nm.png")

@@ -52,6 +52,8 @@ X_ = np.linspace(-xRange, xRange, Nx+1, endpoint=True)
 Y_ = np.linspace(-yRange, yRange, Ny+1, endpoint=True)
 
 # Return a 4N*4N matrix
+
+
 def Hamiltonian(N=N_, J=J_, S=S_, U=U_):
     def _ham(kx, ky):
         def E_(kx, ky):
@@ -96,15 +98,11 @@ def Eig(h, xRange=xRange, yRange=yRange, Nx=Nx, Ny=Ny):
                      for n in range(4*N)]))
 
 
-
-
-
-def plotBS(E, start, end, X=X_, Y=Y_, filename="",title=""):
-    x, y = np.meshgrid(X, Y)
+def plotBS(E, start, end, X=X_, Y=Y_, filename="", title=""):
+    x, y = np.meshgrid(X, Y, indexing="ij")
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     for Z in E[start:end]:
-        # print(Z)
         ax.plot_surface(x, y, Z, cmap=cm.coolwarm,
                         linewidth=0, antialiased=False)
 
@@ -114,6 +112,7 @@ def plotBS(E, start, end, X=X_, Y=Y_, filename="",title=""):
 
     ax.set_xlabel(r"$k_x(\rm \AA^{-1})$")
     ax.set_ylabel(r"$k_y(\rm \AA^{-1})$")
+    
     ax.set_zlabel(r"$E/\rm{eV}$")
     ax.set_title(title)
     if filename == "":
@@ -128,11 +127,12 @@ if __name__ == "__main__":
     S_ = np.zeros([N, 3])
     for i in range(N):
         S_[i, 0] = 1
-        S_[i, 1] = 0
-        S_[i, 2] = 0
+        S_[i, 1] = np.pi/2
+        S_[i, 2] = np.pi/2
     S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
                     * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
+    # print(S)
     h = Hamiltonian(N=N, J=J, S=S)
     e = Eig(h)
 
-    plotBS(e, 2*N-2, 2*N+2,title="TI Film: No Spin Term, J=0.02, 4 bands")
+    plotBS(e, 2*N-2, 2*N+2, title="TI Film: x Spin Term, J=0.02, 4 bands")
