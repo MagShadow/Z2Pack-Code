@@ -100,10 +100,10 @@ settings = {'num_lines': 101,
             }
 
 
-def h0(k): return Hamiltonian(k[0]/5, k[1]/5)
+# def h0(k): return Hamiltonian(k[0]/5, k[1]/5)
 
 
-s0 = z2pack.hm.System(h0, dim=2)
+# s0 = z2pack.hm.System(h0, dim=2)
 # result = z2pack.surface.run(
 #     system=s0,
 #     # parameter of surface is moduled by 2pi
@@ -196,8 +196,6 @@ bs = np.zeros([Nx+1, Ny+1, 4*N], dtype=float)
 for i in range(Nx+1):
     for j in range(Ny+1):
         kx, ky = -xRange+dkx*i, -yRange+dky*j
-        if j==int(Ny/2):
-            print("(",kx,",", ky,")",end=", ")
         temp = np.array([x.real for x in (linalg.eig(Hamiltonian(kx, ky))[0])])
         temp.sort()
         bs[i, j] = temp
