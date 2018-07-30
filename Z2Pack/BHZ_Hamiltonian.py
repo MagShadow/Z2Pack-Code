@@ -9,11 +9,11 @@ pauli_y = np.array([[0, -1j], [1j, 0]], dtype=complex)
 pauli_z = np.array([[1, 0], [0, -1]], dtype=complex)
 pauli_vector = list([pauli_x, pauli_y, pauli_z])
 
-settings = {'num_lines': 201,
-            'pos_tol': 1e-2,
-            'gap_tol': 2e-2,
-            'move_tol': 0.3,
-            'iterator': range(100, 201, 2),
+settings = {'num_lines': 51,
+            'pos_tol': 1e-3,
+            'gap_tol': 0.1,
+            'move_tol': 0.1,
+            'iterator': range(50, 201, 2),
             'min_neighbour_dist': 1e-3,
             }
 
@@ -57,20 +57,6 @@ def squ(k1, k2): return np.array([k2-0.5, k1/2-0.5])
 # def squ(k1, k2): return np.array([k2, k1/2])
 
 
-res1 = z2pack.surface.run(
-    system=s0,
-    # parameter of surface is moduled by 2pi
-    surface=lambda k1, k2: [k2-0.5, k1/2-0.5],
-    **settings
-    # save_file="savefile.msgpack"
-)
-res2 = z2pack.surface.run(
-    system=s0,
-    # parameter of surface is moduled by 2pi
-    surface=lambda k1, k2: [k2-0.5, k1/2],
-    **settings
-    # save_file="savefile.msgpack"
-)
 result = z2pack.surface.run(
     system=s0,
     # parameter of surface is moduled by 2pi
@@ -78,15 +64,63 @@ result = z2pack.surface.run(
     **settings
     # save_file="savefile.msgpack"
 )
+
+
+######################################################
+# Test For Manually Calculation
+def surf(k1, k2): return[k1-0.5, k2-0.5]
+
+
+res = [z2pack.surface.run(system=z2pack.hm.System(
+    h0, dim=2, bands=[i]), surface=surf, **settings) for i in range(2)]
+c = np.array([z2pack.invariant.chern(r) for r in res])
+print(c)
+
+
+# def _pol_step(pol_list):
+#     offset = [-1, 0, 1]
+#     pol_list = [p % 1 for p in pol_list]
+#     res = []
+#     for p1, p2 in zip(pol_list[:-1], pol_list[1:]):
+#         res.append(min((p2 - p1 + o for o in offset), key=abs))
+#     return res
+
+
+# X, _wcc = result.t, result.wcc
+# L, N = len(_wcc), len(_wcc[0])
+# wcc = np.array([[_wcc[j][i] for j in range(L)]for i in range(N)])
+# print(wcc)
+# C = np.array([sum(_pol_step(w)) for w in wcc])
+# print(C)
 # print("Chern=", z2pack.invariant.chern(result))
-print("Z2_1=", z2pack.invariant.z2(res1))
-print("Z2_2=", z2pack.invariant.z2(res2))
-print("Z2=", z2pack.invariant.z2(result))
-fig, ax = plt.subplots(1,3)
-z2pack.plot.wcc(res1, axis=ax[0])
-z2pack.plot.wcc(res2, axis=ax[1])
-z2pack.plot.wcc(result, axis=ax[2])
-plt.savefig("BHZ-Z2test.png")
+# # print("Z2=", z2pack.invariant.z2(result))
+# fig, ax = plt.subplots()
+# z2pack.plot.wcc(result, axis=ax)
+# plt.show()
+######################################################
+# res1 = z2pack.surface.run(
+#     system=s0,
+#     # parameter of surface is moduled by 2pi
+#     surface=lambda k1, k2: [k2-0.5, k1/2-0.5],
+#     **settings
+#     # save_file="savefile.msgpack"
+# )
+# res2 = z2pack.surface.run(
+#     system=s0,
+#     # parameter of surface is moduled by 2pi
+#     surface=lambda k1, k2: [k2-0.5, k1/2],
+#     **settings
+#     # save_file="savefile.msgpack"
+# )
+# print("Chern=", z2pack.invariant.chern(result))
+# print("Z2_1=", z2pack.invariant.z2(res1))
+# print("Z2_2=", z2pack.invariant.z2(res2))
+# print("Z2=", z2pack.invariant.z2(result))
+# fig, ax = plt.subplots(1,3)
+# z2pack.plot.wcc(res1, axis=ax[0])
+# z2pack.plot.wcc(res2, axis=ax[1])
+# z2pack.plot.wcc(result, axis=ax[2])
+# plt.savefig("BHZ-Z2test.png")
 # fig, ax = plt.subplots()
 # # z2pack.plot.chern(result, axis=ax[0])
 # z2pack.plot.wcc(result, axis=ax)
