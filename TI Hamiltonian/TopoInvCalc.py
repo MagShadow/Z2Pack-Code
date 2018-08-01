@@ -2,6 +2,7 @@ import z2pack
 import numpy as np
 from matplotlib import pyplot as plt
 import os
+import logging
 
 from TI_Film import Hamiltonian, Eig, plotBS
 # Constant for Z2Pack Calculation
@@ -11,17 +12,17 @@ pauli_y = np.array([[0, -1j], [1j, 0]], dtype=complex)
 pauli_z = np.array([[1, 0], [0, -1]], dtype=complex)
 pauli_vector = list([pauli_x, pauli_y, pauli_z])
 
-settings = {'num_lines': 41,
-            'pos_tol':  1e-2,
-            'gap_tol': 0.2,
-            'move_tol': 0.05,
-            'iterator': range(40, 201, 4),
-            'min_neighbour_dist': 5e-6,
+settings = {'num_lines': 21,
+            'pos_tol':  2e-2,
+            'gap_tol': 0.05,
+            'move_tol': 0.2,
+            'iterator': range(20, 41, 2),
+            'min_neighbour_dist': 5e-4,
             }
 
 
 def Calc(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], CalcZ2=True):
-    KScale = 1
+    KScale = 5
 
     def h0(k): return ham(k[0]/KScale, k[1]/KScale)
     s0 = z2pack.hm.System(h0, dim=2)
@@ -91,18 +92,55 @@ def Calc(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], CalcZ2=True):
 
     return(Res())
 
+# Calculate the Z2 index mannually
+
+
+def Calc_Man(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], CalcZ2=True):
+    KScale = 5
+
+    def h0(k): return ham(k[0]/KScale, k[1]/KScale)
+    s0 = z2pack.hm.System(h0, dim=2)
+    result = z2pack.surface.run(
+        system=s0,
+        # parameter of surface is moduled by 2pi
+        surface=surf,
+        # surface=lambda k1, k2: [k2, k1/2],
+        **settings
+        # save_file="savefile.msgpack"
+    )
+    X, _wcc = result.t, result.wcc
+    L, N = len(_wcc), len(_wcc[0])
+    wcc = np.array([[_wcc[j][i] for j in range(L)]for i in range(N)])
+
+    logger=logging.Logger("BandCalc")
+    res=[0]*N
+    for i in range(N):
+        res[i]=z2pack.surface.run(system=z2pack.hm.System(
+        h0, dim=2, bands=[i]), surface=surf, **settings)
+        logger.warning("Band="+str(i))
+    
+    c = np.array([z2pack.invariant.chern(r) for r in res])
+    print(c)
+
+    print("Num of WCC~0.5 at k=0.5", sum(
+        [(1 if abs(w[int((L-1)/2)]-0.5) < 1e-7 else 0)for w in wcc]))
+    print("C, sum of C", z2pack.invariant.chern(result), sum(c))
+    fig, ax = plt.subplots()
+    z2pack.plot.wcc(result, axis=ax)
+    plt.savefig("TestWCC_Alone_Z-Spin.png")
+
 
 if __name__ == "__main__":
     N, J = 20, 0.02
     S_ = np.zeros([N, 3])
-    # for i in range(N):
+    for i in range(N):
+        S_[i, 0] = 1
+        S_[i, 1] = 0
+        S_[i, 2] = 0
+    # for i in range(20):
     #     S_[i, 0] = 1
     #     S_[i, 1] = np.pi/2
-    #     S_[i, 2] = 0
-    for i in range(20):
-        S_[i, 0] = 1
-        S_[i, 1] = np.pi/2
-        S_[i, 2] = np.pi/2
+    #     S_[i, 2] = np.pi/2
     # for i in range(10, N):
     #     S_[i, 0] = 1
     #     S_[i, 1] = np.pi/2
@@ -111,8 +149,10 @@ if __name__ == "__main__":
                     * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
     print(S)
     h = Hamiltonian(N=N, J=J, S=S)
+    Calc_Man(h, CalcZ2=False)
+
     # e = Eig(h)
     # plotBS(e, 2*N-2, 2*N+2, title="TI Film: x&-x, J=0.02, 4 bands")
-    res = Calc(h, CalcZ2=False)
-    print(res.Chern)
-    res.plotChern(title="Spin-y, J=0.02")
+    # res = Calc(h, CalcZ2=False)
+    # print(res.Chern)
+    # res.plotChern(title="Spin-z, J=0.02")
