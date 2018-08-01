@@ -21,8 +21,7 @@ settings = {'num_lines': 21,
             }
 
 
-def Calc(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], CalcZ2=True):
-    KScale = 5
+def Calc(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True):
 
     def h0(k): return ham(k[0]/KScale, k[1]/KScale)
     s0 = z2pack.hm.System(h0, dim=2)
@@ -95,8 +94,8 @@ def Calc(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], CalcZ2=True):
 # Calculate the Z2 index mannually
 
 
-def Calc_Man(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], CalcZ2=True):
-    KScale = 5
+def Calc_Man(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True):
+
 
     def h0(k): return ham(k[0]/KScale, k[1]/KScale)
     s0 = z2pack.hm.System(h0, dim=2)
@@ -112,13 +111,13 @@ def Calc_Man(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], CalcZ2=True):
     L, N = len(_wcc), len(_wcc[0])
     wcc = np.array([[_wcc[j][i] for j in range(L)]for i in range(N)])
 
-    logger=logging.Logger("BandCalc")
-    res=[0]*N
+    logger = logging.Logger("BandCalc")
+    res = [0]*N
     for i in range(N):
-        res[i]=z2pack.surface.run(system=z2pack.hm.System(
-        h0, dim=2, bands=[i]), surface=surf, **settings)
+        res[i] = z2pack.surface.run(system=z2pack.hm.System(
+            h0, dim=2, bands=[i]), surface=surf, **settings)
         logger.warning("Band="+str(i))
-    
+
     c = np.array([z2pack.invariant.chern(r) for r in res])
     print(c)
 
@@ -147,7 +146,7 @@ if __name__ == "__main__":
     #     S_[i, 2] = np.pi*3/2
     S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
                     * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
-    print(S)
+    # print(S)
     h = Hamiltonian(N=N, J=J, S=S)
     Calc_Man(h, CalcZ2=False)
 
