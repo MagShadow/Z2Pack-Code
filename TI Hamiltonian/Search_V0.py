@@ -38,10 +38,8 @@ def RdSch(index, q=None):
 
 # def Multi_Test(name):
 #     print('Run task %s (%s)...' % (name, os.getpid()))
-#     start = time.time()
-#     time.sleep(random.random() * 3)
+#     start = time.time() #     time.sleep(random.random() * 3)
 #     end = time.time()
-#     print('Task %s runs %0.2f seconds.' % (name, (end - start)))
 
 
 def Search(N):
@@ -67,7 +65,7 @@ def mkdir(path):
 
 
 if __name__ == "__main__":
-    mkdir("SearchResult")
+    mkdir(Folder)
     Search(100)
     # print('Parent process %s.' % os.getpid())
     # p = Pool()
