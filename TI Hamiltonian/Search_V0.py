@@ -25,10 +25,10 @@ def RdSch(index):
     h = Hamiltonian(N=N, J=J, S=S)
     res=TIC.Calc(h, CalcZ2=True)
     if (abs(res.Chern)>0.1) or res.Z2:
-        p=os.path.join("SearchResult","Result-"+str(index)+" "+str(datetime.now()))
+        p=os.path.join("SearchResult","Result-"+str(index)+" "+str(datetime.now())+".txt")
         with open(p,"w") as f:
-            f.write("Chern="+res.Chern+"\n")
-            f.write("Z2="+res._Z2+"\n")
+            f.write("Chern="+str(res.Chern)+"\n")
+            f.write("Z2="+str(res._Z2)+"\n")
             f.write("Spin Distribution:",str(S))
 
 
