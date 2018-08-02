@@ -10,7 +10,7 @@ import TopoInvCalc as TIC
 
 random.seed()
 
-
+Folder=os.path.join("SearchResult",str(datetime.now()))
 def RdSch(index):
     N, J = 20, 0.02
     S_ = np.zeros([N, 3])
@@ -24,21 +24,19 @@ def RdSch(index):
                     * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
     h = Hamiltonian(N=N, J=J, S=S)
     res=TIC.Calc(h, CalcZ2=True)
-    if (abs(res.Chern)>0.1) or res.Z2:
-        p=os.path.join("SearchResult","Result-"+str(index)+" "+str(datetime.now())+".txt")
+    if res.Z2:
+        p=os.path.join("SearchResult","Result-"+str(index)+".txt")
         with open(p,"w") as f:
             f.write("Chern="+str(res.Chern)+"\n")
             f.write("Z2="+str(res._Z2)+"\n")
-            f.write("Spin Distribution:",str(S))
+            f.write("Spin Distribution:\n"+str(S))
 
 
 
 # def Multi_Test(name):
 #     print('Run task %s (%s)...' % (name, os.getpid()))
-#     start = time.time()
-#     time.sleep(random.random() * 3)
+#     start = time.time() #     time.sleep(random.random() * 3)
 #     end = time.time()
-#     print('Task %s runs %0.2f seconds.' % (name, (end - start)))
 
 
 def Search(N):
@@ -58,7 +56,7 @@ def mkdir(path):
     return
 
 if __name__ == "__main__":
-    mkdir("SearchResult")
+    mkdir(Folder)
     Search(100)
     # print('Parent process %s.' % os.getpid())
     # p = Pool()
