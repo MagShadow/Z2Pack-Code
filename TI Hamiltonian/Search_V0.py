@@ -2,8 +2,10 @@ import numpy as np
 import os
 import time
 import random
+from json import dumps, loads
+from sys import stderr
 from datetime import datetime
-from multiprocessing import Pool, Queue
+from multiprocessing import Pool, Queue, Manager
 
 from TI_Film import Hamiltonian
 import TopoInvCalc as TIC
@@ -11,7 +13,17 @@ import TopoInvCalc as TIC
 random.seed()
 
 
+def nt():
+    return datetime.now().strftime("%y-%m-%d-%H-%M-%S")
+
+
+sfname = os.path.join("SearchResult", nt())
+
+
 def RdSch(index, q=None):
+    random.seed()
+
+    print("index=", index)
     N, J = 20, 0.02
     S_ = np.zeros([N, 3])
     for i in range(N):
@@ -22,37 +34,61 @@ def RdSch(index, q=None):
         S_ = np.array([[1, 0, 0]]*N)
     S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
                     * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
+    # print(S)
     h = Hamiltonian(N=N, J=J, S=S)
     res = TIC.Calc(h, CalcZ2=True)
+    # print(res.Chern)
     if (abs(res.Chern) > 0.1) or res.Z2:
+        # print("True!")
+        d = dict(index=index, C=res.Chern, Z2=res._Z2, SpinDist=S.tolist())
         if q != None:
-            q.push("Index="+str(i)+" ,Chern=" +
-                   str(res.Chern)+" ,Z2="+str(res._Z2)+"\n")
-        p = os.path.join("SearchResult", "Result-" +
-                         str(index)+" "+str(datetime.now())+".txt")
-        with open(p, "w") as f:
-            f.write("Chern="+str(res.Chern)+"\n")
-            f.write("Z2="+str(res._Z2)+"\n")
-            f.write("Spin Distribution:"+str(S))
+            # print("Push!")
+            q.put(dumps(d))
+        else:
+            mkdir(sfname)
+            with open(os.path.join(sfname, "Result-" + str(index)+".txt"), "w") as f:
+                f.write(d)
+                # q.push("Index="+str(i)+" ,Chern=" +
+                #        str(res.Chern)+" ,Z2="+str(res._Z2)+"\n")
+                # p = os.path.join("SearchResult", "Result-" +
+                #                  str(index)+".txt")
+                # with open(p, "w") as f:
+                #     f.write("Chern="+str(res.Chern)+"\n")
+                #     f.write("Z2="+str(res._Z2)+"\n")
+                #     f.write("Spin Distribution:"+str(S))
 
-
-# def Multi_Test(name):
-#     print('Run task %s (%s)...' % (name, os.getpid()))
-#     start = time.time() #     time.sleep(random.random() * 3)
-#     end = time.time()
+                # def Multi_Test(name):
+                #     print('Run task %s (%s)...' % (name, os.getpid()))
+                #     start = time.time() #     time.sleep(random.random() * 3)
+                #     end = time.time()
 
 
 def Search(N):
-    p, q = Pool(), Queue()
+    p, m = Pool(), Manager()
+    q = m.Queue()
     for i in range(N):
-        p.apply_async(RdSch, args=(i, q))
+        p.apply_async(RdSch, args=(i, q,))
     p.close()
     p.join()
-    with open(os.path.join("SearchResult", "Result.txt"), "w") as f:
-        while not q.empty():
-            f.write(q.get()+"\n")
-
-    print("Done!")
+    res = []
+    # print(q.empty())
+    while not q.empty():
+        res.append(q.get())
+    if res != []:
+        r_index = []
+        with open(sfname+".txt", "w") as f:
+            for r in res:
+                f.write(r+"\n")
+                # print(loads(r))
+                r_index.append(loads(r).get("index"))
+        with open(os.path.join("SearchResult", "Result.txt"), "a") as f:
+            f.write(sfname+" "+str(r_index)+"\n")
+        # print(r_index)
+    else:
+        print("No Result!")
+        with open(os.path.join("SearchResult", "Result.txt"), "a") as f:
+            f.write(sfname+" "+str([])+"\n")
+    stderr.write("Done!")
 
 
 def mkdir(path):
@@ -65,8 +101,7 @@ def mkdir(path):
 
 
 if __name__ == "__main__":
-    mkdir(Folder)
-    Search(100)
+    Search(200)
     # print('Parent process %s.' % os.getpid())
     # p = Pool()
     # for i in range(20):

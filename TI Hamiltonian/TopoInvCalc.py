@@ -12,11 +12,11 @@ pauli_y = np.array([[0, -1j], [1j, 0]], dtype=complex)
 pauli_z = np.array([[1, 0], [0, -1]], dtype=complex)
 pauli_vector = list([pauli_x, pauli_y, pauli_z])
 
-settings = {'num_lines': 21,
-            'pos_tol':  2e-2,
+settings = {'num_lines': 31,
+            'pos_tol':  1e-2,
             'gap_tol': 0.05,
             'move_tol': 0.2,
-            'iterator': range(20, 41, 2),
+            'iterator': range(30, 51, 4),
             'min_neighbour_dist': 5e-4,
             }
 
@@ -148,10 +148,10 @@ if __name__ == "__main__":
                     * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
     # print(S)
     h = Hamiltonian(N=N, J=J, S=S)
-    Calc_Man(h, CalcZ2=False)
+    # Calc_Man(h, CalcZ2=False)
 
     # e = Eig(h)
     # plotBS(e, 2*N-2, 2*N+2, title="TI Film: x&-x, J=0.02, 4 bands")
-    # res = Calc(h, CalcZ2=False)
-    # print(res.Chern)
-    # res.plotChern(title="Spin-z, J=0.02")
+    res = Calc(h, CalcZ2=False)
+    print(res.Chern)
+    res.plotChern(title="Spin-z, J=0.02")
