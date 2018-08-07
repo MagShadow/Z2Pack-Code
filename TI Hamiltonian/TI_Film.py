@@ -1,9 +1,9 @@
 # Define Hamiltonian for TI Film
-
+import os
 import numpy as np
 from scipy import linalg
 from matplotlib import pyplot as plt
-import os
+from numbers import Integral
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
@@ -38,6 +38,7 @@ sig = np.array([sig_x, sig_y, sig_z])
 # second and three term is the theta and phi, describe the direction of the spin
 # S_[i] is the spin vector
 def SpinZ(M):
+    # M = int(M)
     vS = np.array([[1, 0, 0]]*M)
     S_ = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
                      * np.sin(s[2]), s[0]*np.cos(s[1])])for s in vS])
@@ -55,10 +56,14 @@ Y_ = np.linspace(-yRange, yRange, Ny+1, endpoint=True)
 
 
 def Hamiltonian(N=N_, J=J_, S=[], U=[]):
+    assert isinstance(N, Integral), "N should be an interger!"
+    assert (J > 0) or (abs(J) < 1e-9), "J should >0!"
     if S == []:
         S = SpinZ(N)
     if U == []:
         U = np.zeros([N])
+    assert len(S) == N, "Length of S distribution should equal to N"
+    assert len(U) == N, "Length of U distribution should equal to N"
 
     def _ham(kx, ky):
         def E_(kx, ky):
