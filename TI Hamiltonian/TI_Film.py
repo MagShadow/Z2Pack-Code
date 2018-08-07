@@ -37,14 +37,14 @@ sig = np.array([sig_x, sig_y, sig_z])
 # first component is the intensity, from 0 to 1
 # second and three term is the theta and phi, describe the direction of the spin
 # S_[i] is the spin vector
-vS = np.zeros([N_, 3])
-for i in range(N_):
-    vS[i, 0] = 1
-    vS[i, 1] = 0
-    vS[i, 2] = 0
+def SpinZ(M):
+    vS = np.array([[1, 0, 0]]*M)
+    S_ = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
+                     * np.sin(s[2]), s[0]*np.cos(s[1])])for s in vS])
+    return S_
 
-S_ = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
-                 * np.sin(s[2]), s[0]*np.cos(s[1])])for s in vS])
+
+S_ = SpinZ(N_)
 U_ = np.zeros([N_])
 
 xRange, yRange, Nx, Ny = 0.05, 0.05, 50, 50
@@ -54,7 +54,12 @@ Y_ = np.linspace(-yRange, yRange, Ny+1, endpoint=True)
 # Return a 4N*4N matrix
 
 
-def Hamiltonian(N=N_, J=J_, S=S_, U=U_):
+def Hamiltonian(N=N_, J=J_, S=[], U=[]):
+    if S == []:
+        S = SpinZ(N)
+    if U == []:
+        U = np.zeros([N])
+
     def _ham(kx, ky):
         def E_(kx, ky):
             return C+D2*(kx*kx+ky*ky)
@@ -112,7 +117,7 @@ def plotBS(E, start, end, X=X_, Y=Y_, filename="", title=""):
 
     ax.set_xlabel(r"$k_x(\rm \AA^{-1})$")
     ax.set_ylabel(r"$k_y(\rm \AA^{-1})$")
-    
+
     ax.set_zlabel(r"$E/\rm{eV}$")
     ax.set_title(title)
     if filename == "":

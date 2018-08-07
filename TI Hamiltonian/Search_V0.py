@@ -34,9 +34,9 @@ def RdSch(index, q=None):
         S_ = np.array([[1, 0, 0]]*N)
     S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
                     * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
-    S=S*random.random()
+    S = S*random.random()
     # print(S)
-    h = Hamiltonian(N=N, J=J, S=S)
+    h = Hamiltonian(N=N, J=J)
     res = TIC.Calc(h, CalcZ2=True)
     # print(res.Chern)
     if res.Z2:
