@@ -34,11 +34,12 @@ def RdSch(index, q=None):
         S_ = np.array([[1, 0, 0]]*N)
     S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
                     * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
+    S=S*random.random()
     # print(S)
     h = Hamiltonian(N=N, J=J, S=S)
     res = TIC.Calc(h, CalcZ2=True)
     # print(res.Chern)
-    if (abs(res.Chern) > 0.1) or res.Z2:
+    if res.Z2:
         # print("True!")
         d = dict(index=index, C=res.Chern, Z2=res._Z2, SpinDist=S.tolist())
         if q != None:
@@ -88,7 +89,7 @@ def Search(N):
         print("No Result!")
         with open(os.path.join("SearchResult", "Result.txt"), "a") as f:
             f.write(sfname+" "+str([])+"\n")
-    stderr.write("Done!")
+    stderr.write("Done!"+nt())
 
 
 def mkdir(path):
@@ -101,7 +102,7 @@ def mkdir(path):
 
 
 if __name__ == "__main__":
-    Search(200)
+    Search(100)
     # print('Parent process %s.' % os.getpid())
     # p = Pool()
     # for i in range(20):
