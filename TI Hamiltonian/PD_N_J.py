@@ -23,23 +23,24 @@ def nt():
 
 
 def CalcGap():
-    N_min, N_max, J = 6, 30, 0.00
-    Gap = np.zeros([N_max+1], dtype=float)
-    for N in range(N_min, N_max+1):
-        # S_ = np.array([[1, 0, 0]]*N)
-        # S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
-        #                 * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
-        h = Hamiltonian(N=N, J=J)   # By Default it is Spin-Z
-        eig = np.array([x.real for x in (linalg.eig(h(0, 0))[0])])
-        eig.sort()
-        Gap[N] = eig[2*N]-eig[2*N-1]
+    # N_min, N_max, J = 6, 30, 0.00
+    # Gap = np.zeros([N_max+1], dtype=float)
+    # for N in range(N_min, N_max+1):
+    #     # S_ = np.array([[1, 0, 0]]*N)
+    #     # S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
+    #     #                 * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
+    #     h = Hamiltonian(N=N, J=J)   # By Default it is Spin-Z
+    #     eig = np.array([x.real for x in (linalg.eig(h(0, 0))[0])])
+    #     eig.sort()
+    #     Gap[N] = eig[2*N]-eig[2*N-1]
 
-    plt.subplot()
-    plt.plot(list(range(N_min, N_max+1)), Gap[N_min:N_max+1]*1000)
-    plt.xlabel(r"$N$")
-    plt.ylabel(r"$Gap(\rm meV)$")
-    plt.title("Gap vs Thickness, No Spin")
-    plt.savefig("Gap_vs_Thickness_No_Spin.png")
+    # plt.subplot()
+    # plt.plot(list(range(N_min, N_max+1)), Gap[N_min:N_max+1]*1000)
+    # plt.xlabel(r"$N$")
+    # plt.ylabel(r"$Gap(\rm meV)$")
+    # plt.title("Gap vs Thickness, No Spin")
+    # plt.savefig("Gap_vs_Thickness_No_Spin.png")
+    return
 
 
 def TopoOrder(res, _Chern_tol=0.1):
@@ -52,6 +53,7 @@ def TopoOrder(res, _Chern_tol=0.1):
         3 if Chern and Z2;
     '''
     C, Z = 1 if abs(res.Chern) > _Chern_tol else 0, int(res.Z2)
+    print(C, Z)
     return C*2+Z
 
 
@@ -59,27 +61,22 @@ def TopoOrder(res, _Chern_tol=0.1):
 #     global lock
 #     lock = l
 def Run(_N, _J, i, j, Phase):
+    # 现在可以确认的是，Phase这个Manager().list可以在不同进程间通信
     h = Hamiltonian(N=_N, J=_J)
     res = TIC.Calc(h, CalcZ2=True)
+    print(res.Chern)
     Phase[i][j] = TopoOrder(res)
     # Phase[i][j] = int(random.random()*4)
-    # print("New Run!")
-    # lock.aquire()
-    # print("Get Lock"+datetime.now().strftime("%y-%m-%d-%H-%M-%S"))
-    # Phase[i][j] = i+j
-    # print("Write:(", i, ",", j, ")=", Phase[i][j])
+    # Phase[i][j] = i*10+j
+
+    return
 
 
 def PhaseDiag():
-    N_min, N_max, J_min, J_max, NJ = 15, 25, 0.00, 0.02, 10
+    N_min, N_max, J_min, J_max, NJ = 19, 21, 0.01, 0.03, 3
     N = np.array(list(range(N_min, N_max+1)), dtype=int)
-    # for n in N:
-    #     print(type(n))
     J = np.linspace(J_min, J_max, num=NJ, endpoint=True)
-    x, y = np.meshgrid(N, J, indexing="ij")
-    # global Phase
-    # Phase = np.zeros([N_max+1, NJ], dtype=int)
-    # lock = Lock()
+    # print(N, J)
 
     p, m = Pool(), Manager()
     Phase = m.list([m.list([0]*NJ) for i in range(N_max-N_min+1)])
@@ -106,11 +103,8 @@ def PhaseDiag():
 
     p.close()
     p.join()
-    # Res=[[]]
     P = [list(x) for x in list(Phase)]
     # print(P)
-    # pp = [list(x) for x in list(Phase)]
-    # print(pp)
     stime = nt()
     with open("PD_Data_"+stime+".txt", "w") as f:
         d = dict(N_min=N_min, N_max=N_max, J_min=J_min,
