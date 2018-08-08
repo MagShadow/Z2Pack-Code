@@ -62,7 +62,7 @@ def Run(_N, _J, i, j, Phase):
 
 
 def PhaseDiag():
-    N_min, N_max, J_min, J_max, NJ = 15, 17, 0.00, 0.05, 3
+    N_min, N_max, J_min, J_max, NJ = 10, 30, 0.00, 0.02, 20
     N = np.array(list(range(N_min, N_max+1)), dtype=int)
     # for n in N:
     #     print(type(n))
@@ -73,6 +73,9 @@ def PhaseDiag():
     # lock = Lock()
     p, m = Pool(), Manager()
     Phase = m.list([m.list([0]*NJ)]*(N_max+1))  # 二维数组实在是太坑爹了......
+    # P = [list(x) for x in list(Phase)]
+    # P = [list(x) for x in list(Phase)[N_min:N_max+1]]
+    # print(P)
     # print()
     # print(Phase)
     # l = m.Lock()
@@ -81,17 +84,17 @@ def PhaseDiag():
     # lock.release()
 
     # p_Run = partial(Run, lock=l)
-    # for i, j in product(list(range(N_max-N_min+1)), list(range(NJ))):
-    #     # print(i,j,N[i],J[j])
-    #     # In Default Settings, Spin is in z-axis
-    #     # h = Hamiltonian(N=N[i], J=J[j])
-    #     N_, J_ = N[i], J[j]
-    #     p.apply_async(Run, args=(N_, J_, i, j, Phase,))
+    for i, j in product(list(range(N_max-N_min+1)), list(range(NJ))):
+        # print(i,j,N[i],J[j])
+        # In Default Settings, Spin is in z-axis
+        # h = Hamiltonian(N=N[i], J=J[j])
+        N_, J_ = N[i], J[j]
+        p.apply_async(Run, args=(N_, J_, i, j, Phase,))
 
-    # p.close()
-    # p.join()
+    p.close()
+    p.join()
     # Res=[[]]
-    P = [list(x) for x in list(Phase)]
+    P = [list(x) for x in list(Phase)[N_min:N_max+1]]
     plt.subplot()
     plt.pcolor(x, y, P)
     plt.savefig("PhaseDiag_N_15_17_J_0_0.05.png")
