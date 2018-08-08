@@ -21,7 +21,7 @@ settings = {'num_lines': 31,
             }
 
 
-def Calc(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True):
+def Calc(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True, settings=settings):
 
     def h0(k): return ham(k[0]/KScale, k[1]/KScale)
     s0 = z2pack.hm.System(h0, dim=2)
@@ -95,7 +95,6 @@ def Calc(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True):
 
 
 def Calc_Man(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True):
-
 
     def h0(k): return ham(k[0]/KScale, k[1]/KScale)
     s0 = z2pack.hm.System(h0, dim=2)
