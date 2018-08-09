@@ -6,7 +6,7 @@ import os
 import random
 from scipy import linalg
 import matplotlib as mpl
-mpl.use("Agg")
+mpl.use("Agg") # 在服务器端没有DISPLAY资源，因此必须换成无交互的后端。默认为"TkAgg"。
 from matplotlib import pyplot as plt
 
 
@@ -21,10 +21,10 @@ import TopoInvCalc as TIC
 
 settings = {'num_lines': 31,
             'pos_tol':  1e-2,
-            'gap_tol': 0.05,
-            'move_tol': 0.2,
+            'gap_tol': 0.1,
+            'move_tol': 0.1,
             'iterator': range(30, 51, 4),
-            'min_neighbour_dist': 5e-4,
+            'min_neighbour_dist': 1e-4,
             }
 
 def nt():
@@ -63,26 +63,24 @@ def TopoOrder(res, _Chern_tol=0.1):
 
 
 def Run(_N, _J, i, j, Phase):
-    # 现在可以确认的是，Phase这个Manager().list可以在不同进程间通信
+    # 使用Manager().list在多进程通信
+    # 在Python3.5下表现有问题：不报错，但是无法写入
     h = Hamiltonian(N=_N, J=_J)
     res = TIC.Calc(h, CalcZ2=True,settings=settings)
     print(res.Chern)
     Phase[i][j] = TopoOrder(res)
-    # Phase[i][j] = int(random.random()*4)
-    # Phase[i][j] = i*10+j
     return
 
 
 def PhaseDiag():
-    N_min, N_max, J_min, J_max, NJ = 15, 31, 0.00, 0.03, 15
+    N_min, N_max, J_min, J_max, NJ = 6, 20, 0.00, 0.02, 20
     N = np.array(list(range(N_min, N_max+1)), dtype=int)
     J = np.linspace(J_min, J_max, num=NJ, endpoint=True)
-    # print(N, J)
 
     p, m = Pool(), Manager()
     Phase = m.list([m.list([0]*NJ) for i in range(N_max-N_min+1)])
     # 二维数组实在是太坑爹了......
-    # 坑爹*2
+    # 坑爹*2： 内层的m.list是对象，所以如果直接用[...]*N的方式写会导致写入引用
 
     for i, j in product(list(range(N_max-N_min+1)), list(range(NJ))):
         N_, J_ = N[i], J[j]
@@ -91,7 +89,6 @@ def PhaseDiag():
     p.close()
     p.join()
     P = [list(x) for x in list(Phase)]
-    # print(P)
     stime = nt()
     with open("PD_Data_"+stime+".txt", "w") as f:
         d = dict(N_min=N_min, N_max=N_max, J_min=J_min,
