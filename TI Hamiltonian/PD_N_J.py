@@ -5,8 +5,10 @@ import numpy as np
 import os
 import random
 from scipy import linalg
-from matplotlib import pyplot as plt
 import matplotlib as mpl
+mpl.use("Agg")
+from matplotlib import pyplot as plt
+
 
 from json import dumps, loads
 from itertools import product
@@ -17,11 +19,11 @@ from multiprocessing import Lock, Pool, Queue, Manager
 from TI_Film import Hamiltonian, Eig
 import TopoInvCalc as TIC
 
-settings = {'num_lines': 21,
+settings = {'num_lines': 31,
             'pos_tol':  1e-2,
             'gap_tol': 0.05,
             'move_tol': 0.2,
-            'iterator': range(20, 51, 4),
+            'iterator': range(30, 51, 4),
             'min_neighbour_dist': 5e-4,
             }
 
@@ -72,7 +74,7 @@ def Run(_N, _J, i, j, Phase):
 
 
 def PhaseDiag():
-    N_min, N_max, J_min, J_max, NJ = 19, 21, 0.01, 0.03, 3
+    N_min, N_max, J_min, J_max, NJ = 15, 31, 0.00, 0.03, 15
     N = np.array(list(range(N_min, N_max+1)), dtype=int)
     J = np.linspace(J_min, J_max, num=NJ, endpoint=True)
     # print(N, J)
