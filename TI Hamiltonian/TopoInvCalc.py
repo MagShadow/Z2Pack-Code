@@ -3,6 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import os
 import logging
+from datetime import datetime
 
 from TI_Film import Hamiltonian, Eig, plotBS
 # Constant for Z2Pack Calculation
@@ -21,21 +22,27 @@ settings = {'num_lines': 31,
             }
 
 
-def Calc(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True, settings=settings):
+def Calc(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True, LogOut=True, Timer=True, settings=settings):
+    if not LogOut:
+        logging.getLogger('z2pack').setLevel(logging.ERROR)
 
     def h0(k): return ham(k[0]/KScale, k[1]/KScale)
-    s0 = z2pack.hm.System(h0, dim=2)
-    result = z2pack.surface.run(
-        system=s0,
-        # parameter of surface is moduled by 2pi
-        surface=surf,
-        # surface=lambda k1, k2: [k2, k1/2],
-        **settings
-        # save_file="savefile.msgpack"
-    )
 
     class Res(object):
+
         def __init__(self):
+            if Timer:
+                T_start = datetime.now()
+
+            s0 = z2pack.hm.System(h0, dim=2)
+            result = z2pack.surface.run(
+                system=s0,
+                # parameter of surface is moduled by 2pi
+                surface=surf,
+                # surface=lambda k1, k2: [k2, k1/2],
+                **settings
+                # save_file="savefile.msgpack"
+            )
             self.result = result
             self.Chern = z2pack.invariant.chern(result)
             self.CalcZ2 = CalcZ2
@@ -49,6 +56,10 @@ def Calc(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True, setti
                 self.Z2 = True if (Z2_1*Z2_2*(1-Z2_T) == 1) else False
                 self._Z2 = [Z2_1, Z2_2, Z2_T]
 
+            if Timer:
+                T_end = datetime.now()
+                print("Running Time:"+str(T_end-T_start))
+
         def plotChern(self, title="", filename="", start=0, end=1):
             fig, ax = plt.subplots()
             z2pack.plot.wcc(self.result, axis=ax)
@@ -57,8 +68,6 @@ def Calc(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True, setti
             ax.set_xlim(start, end)
             ax.set_title("Chern="+str(self.Chern))
             fig.suptitle(title)
-            # # plt.savefig("Chern TI film z spin.png")
-            # ax.set_title("TI film, d=6nm, j=0.02")
             if filename != "":
                 path = os.path.join("Pictures", filename+".png")
                 plt.savefig(path)
@@ -91,11 +100,13 @@ def Calc(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True, setti
 
     return(Res())
 
-# Calculate the Z2 index mannually
 
 
 def Calc_Man(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True):
-
+    '''
+    Try to calculate the Z2 index manually by calculating the Chern Number of Each Band.
+    Still under constructing
+    '''
     def h0(k): return ham(k[0]/KScale, k[1]/KScale)
     s0 = z2pack.hm.System(h0, dim=2)
     result = z2pack.surface.run(
@@ -146,11 +157,11 @@ if __name__ == "__main__":
     S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
                     * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
     # print(S)
-    h = Hamiltonian(N=N, J=J, S=S)
+    h = Hamiltonian(N=N, J=J)
     # Calc_Man(h, CalcZ2=False)
 
     # e = Eig(h)
     # plotBS(e, 2*N-2, 2*N+2, title="TI Film: x&-x, J=0.02, 4 bands")
-    res = Calc(h, CalcZ2=False)
+    res = Calc(h, CalcZ2=False, LogOut=False)
     print(res.Chern)
     res.plotChern(title="Spin-z, J=0.02")

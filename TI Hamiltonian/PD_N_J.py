@@ -6,16 +6,16 @@ import os
 import random
 from scipy import linalg
 import matplotlib as mpl
-mpl.use("Agg") # 在服务器端没有DISPLAY资源，因此必须换成无交互的后端。默认为"TkAgg"。
+mpl.use("Agg")  # 在服务器端没有DISPLAY资源，因此必须换成无交互的后端。默认为"TkAgg"。
 from matplotlib import pyplot as plt
-
 
 from json import dumps, loads
 from itertools import product
 from datetime import datetime
 from functools import partial
 from multiprocessing import Lock, Pool, Queue, Manager
-
+# 使用Manager().list在多进程通信
+# 在Python3.5下表现有问题：不报错，但是无法写入
 from TI_Film import Hamiltonian, Eig
 import TopoInvCalc as TIC
 
@@ -26,6 +26,7 @@ settings = {'num_lines': 31,
             'iterator': range(30, 51, 4),
             'min_neighbour_dist': 1e-4,
             }
+
 
 def nt():
     return datetime.now().strftime("%y-%m-%d-%H-%M-%S")
@@ -62,17 +63,34 @@ def TopoOrder(res, _Chern_tol=0.1):
     return C*2+Z
 
 
-def Run(_N, _J, i, j, Phase):
-    # 使用Manager().list在多进程通信
-    # 在Python3.5下表现有问题：不报错，但是无法写入
+def Draw(N, J, P, title="Phase Diagram of N & J", filename=""):
+    fig, ax = plt.subplots()
+    cmap = mpl.colors.ListedColormap(["r", "g", "b", "c"])
+    norm = mpl.colors.BoundaryNorm(list(range(5)), cmap.N)
+    x, y = np.meshgrid(
+        np.append(N, 2*N[-1]-N[-2]), np.append(J, 2*J[-1]-J[-2]))
+    c = ax.pcolormesh(x, y, np.array(P).T, cmap=cmap, vmin=0, vmax=3)
+    ax2 = fig.add_axes([0.92, 0.1, 0.03, 0.8])
+    cb = mpl.colorbar.ColorbarBase(ax2, cmap=cmap, norm=norm)
+    ax.set_title(title)
+    if filename != "":
+        plt.savefig(filename+".png")
+    else:
+        plt.show()
+
+
+def Run_0(_N, _J, i, j, Phase):
+    '''
+    This func calculate the system with uniform spin distribution in Z-direction.
+    '''
     h = Hamiltonian(N=_N, J=_J)
-    res = TIC.Calc(h, CalcZ2=True,settings=settings)
+    res = TIC.Calc(h, CalcZ2=True, settings=settings)
     print(res.Chern)
     Phase[i][j] = TopoOrder(res)
     return
 
 
-def PhaseDiag():
+def PhaseDiag(func):
     N_min, N_max, J_min, J_max, NJ = 6, 20, 0.00, 0.02, 20
     N = np.array(list(range(N_min, N_max+1)), dtype=int)
     J = np.linspace(J_min, J_max, num=NJ, endpoint=True)
@@ -84,7 +102,7 @@ def PhaseDiag():
 
     for i, j in product(list(range(N_max-N_min+1)), list(range(NJ))):
         N_, J_ = N[i], J[j]
-        p.apply_async(Run, args=(N_, J_, i, j, Phase,))
+        p.apply_async(func, args=(N_, J_, i, j, Phase,))
 
     p.close()
     p.join()
@@ -95,23 +113,9 @@ def PhaseDiag():
                  J_max=J_max, NJ=NJ, Phase=P)
         f.write(dumps(d))
 
-    def Draw(filename=""):
-        fig, ax = plt.subplots()
-        cmap = mpl.colors.ListedColormap(["r", "g", "b", "c"])
-        norm = mpl.colors.BoundaryNorm(list(range(5)), cmap.N)
-        x, y = np.meshgrid(
-            np.append(N, 2*N[-1]-N[-2]), np.append(J, 2*J[-1]-J[-2]))
-        c = ax.pcolormesh(x, y, np.array(P).T, cmap=cmap, vmin=0, vmax=3)
-        ax2 = fig.add_axes([0.92, 0.1, 0.03, 0.8])
-        cb = mpl.colorbar.ColorbarBase(ax2, cmap=cmap, norm=norm)
-        ax.set_title("Phase Diagram of N & J")
-        if filename != "":
-            plt.savefig(filename+".png")
-        else:
-            plt.show()
-    Draw("PhaseDiagram_"+stime)
+    Draw(N, J, P, title="Phase Diagram of N & J (Spin-Z)", filename="PhaseDiag_"+stime)
 
 
 if __name__ == "__main__":
     # CalcGap()
-    PhaseDiag()
+    PhaseDiag(Run_0)
