@@ -17,11 +17,11 @@ from multiprocessing import Lock, Pool, Queue, Manager
 from TI_Film import Hamiltonian, Eig
 import TopoInvCalc as TIC
 
-settings = {'num_lines': 31,
+settings = {'num_lines': 21,
             'pos_tol':  1e-2,
             'gap_tol': 0.05,
             'move_tol': 0.2,
-            'iterator': range(30, 51, 4),
+            'iterator': range(20, 51, 4),
             'min_neighbour_dist': 5e-4,
             }
 
