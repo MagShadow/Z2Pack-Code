@@ -4,9 +4,12 @@ import numpy as np
 from functools import partial
 from multiprocessing import Lock, Pool, Manager
 from itertools import product
-from matplotlib import pyplot as plt
-import matplotlib as mpl
 
+import matplotlib as mpl
+mpl.use("Agg")
+from matplotlib import pyplot as plt
+
+random.seed()
 
 def Run(i, Y, lock):
     print("Run: index=", i)
@@ -23,8 +26,9 @@ def Run_without_lock(N_, J_, i, j, Z):
     # time.sleep(int(random.random()*10))
     # lock.acquire()
     # print("Get Lock!, index=", i)
-    Z[i][j] = int(random.random()*4)
-    print("i,j,N,J=", i, j, N_, J_)
+    temp= int(random.random()*4)
+    Z[i][j]=temp
+    print("i,j,N,J,temp,Value=", i, j, N_, J_,temp,Z[i][j])
     # Z[i][j] = i*10+j
 
     # print("Write: index=", i, ",", j, " value=", Z[i][j])
@@ -48,8 +52,8 @@ def Draw(X, Y, Z):
     ax.set_title("Title")
     # fig.colorbar(cmap, ax=ax, norm=norm)
     # fig.colorbar(c, ax=ax)
-    # plt.savefig("PhaseDiag_N_15_17_J_0_0.02.png")
-    plt.show()
+    plt.savefig("TestForMP.png")
+    # plt.show()
     return
 
 
@@ -62,12 +66,15 @@ if __name__ == "__main__":
     J = np.linspace(J_min, J_max, num=NJ, endpoint=True)
 
     x, y = np.meshgrid(N, J, indexing="ij")
-    Z = m.list([m.list([0]*NJ)for i in range(N_max-N_min+1)])
+    Z = m.list([m.list([0 for j in range(NJ)])for i in range(N_max-N_min+1)])
     # pRun = partial(Run, lock=l)
     for i, j in product(list(range(N_max-N_min+1)), list(range(NJ))):
         p.apply_async(Run_without_lock, args=(N[i], J[j], i, j, Z,))
     p.close()
     p.join()
     z = [list(x) for x in list(Z)]
-    print(z)
+    with open("TestForMP.txt","w") as f:
+        f.write(str(z))
+
+    # print(z)
     Draw(N, J, z)
