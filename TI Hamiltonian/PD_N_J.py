@@ -110,6 +110,8 @@ def Run_1(_N, _J, i, j, Phase):
 
 
 def PhaseDiag(func, title="Phase Diagram of N & J"):
+    T_start = datetime.now()
+    print("Start Calculation at ", str(T_start))
     N_min, N_max, J_min, J_max, NJ = 6, 20, 0.00, 0.02, 20
     # N_min, N_max, J_min, J_max, NJ = 19, 21, 0.00, 0.02, 3
     N = np.array(list(range(N_min, N_max+1)), dtype=int)
@@ -135,6 +137,9 @@ def PhaseDiag(func, title="Phase Diagram of N & J"):
 
     Draw(N, J, P, title=title,
          filename="PhaseDiag_"+stime)
+    T_end = datetime.now()
+    print("End Calculation at ", str(T_end))
+    print("Total time:", str(T_end-T_start))
 
 
 if __name__ == "__main__":
