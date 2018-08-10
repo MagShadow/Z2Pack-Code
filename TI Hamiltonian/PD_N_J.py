@@ -98,7 +98,7 @@ def Run_1(_N, _J, i, j, Phase):
     print("Start Calculation: N=%d , J=%.3f" % (_N, _J))
     _S = np.zeros([_N, 3])
     for i in range(int(_N/2)):
-        _S[i, 0], _S[_N-i-1,0] = 1, -1
+        _S[i, 0], _S[_N-i-1, 0] = 1, -1
     S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0] *
                     np.sin(s[1]) * np.sin(s[2]), s[0]*np.cos(s[1])])for s in _S])
     h = Hamiltonian(N=_N, J=_J, S=S)

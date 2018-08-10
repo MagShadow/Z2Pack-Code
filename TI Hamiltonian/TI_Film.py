@@ -90,8 +90,12 @@ def Hamiltonian(N=N_, J=J_, S=[], U=[]):
 
 def Eig(h, xRange=xRange, yRange=yRange, Nx=Nx, Ny=Ny):
     '''
-        Accept callable object h(kx,ky)
+        Accept callable object h(kx,ky);
+        Return a matrix, Eig[Band_Index,kx_index,ky_index]
     '''
+    assert isinstance(Nx, Integral), "Nx should be an interger!"
+    assert isinstance(Ny, Integral), "Ny should be an interger!"
+
     N1, N2 = h(0, 0).shape
     N = int(N1/4)
     dkx, dky = 2*xRange/Nx, 2*yRange/Ny
@@ -104,8 +108,27 @@ def Eig(h, xRange=xRange, yRange=yRange, Nx=Nx, Ny=Ny):
             temp.sort()
             bs[i, j] = temp
 
-    return(np.array([([([bs[i, j, n] for j in range(Ny+1)]) for i in range(Nx+1)])
-                     for n in range(4*N)]))
+    class EigenSys(np.ndarray):
+        def __init__(self, *args, **kw):
+            super(*args, **kw)
+    print(N)
+    temp = [([([bs[i, j, n] for j in range(Ny+1)]) for i in range(Nx+1)])
+            for n in range(4*N)]
+    _Eig = EigenSys(temp)
+    return _Eig
+    # return(np.array([([([bs[i, j, n] for j in range(Ny+1)]) for i in range(Nx+1)])
+    #                  for n in range(4*N)]))
+
+
+def Gap(E, k=None):
+    if k != None:
+        assert type(k) == tuple, "Accept para like (kx_index,ky_index)!"
+        assert len(k) == 2, "Accept para like (kx_index,ky_index)!"
+        N = int(E.shape[0]/4)
+        _Gap = E[2*N]-E[2*N-1]
+        return min(_Gap)
+    else:
+        return E[k[0], k[1]]
 
 
 def plotBS(E, start, end, X=X_, Y=Y_, filename="", title=""):
@@ -133,15 +156,18 @@ def plotBS(E, start, end, X=X_, Y=Y_, filename="", title=""):
 
 
 if __name__ == "__main__":
-    N, J = 20, 0.02
-    _S = np.zeros([N, 3])
-    for i in range(int(N/2)):
-        _S[i, 0], _S[N-i-1] = 1, -1
-    S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0] *
-                    np.sin(s[1]) * np.sin(s[2]), s[0]*np.cos(s[1])])for s in _S])
+    N, J = 12, 0.005
+    # _S = np.zeros([N, 3])
+    # for i in range(int(N/2)):
+    #     _S[i, 0], _S[N-i-1, 0] = 1, -1
+    # S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0] *
+    #                 np.sin(s[1]) * np.sin(s[2]), s[0]*np.cos(s[1])])for s in _S])
 
-    print(S)
-    h = Hamiltonian(N=N, J=J, S=S)
-    e = Eig(h)
-
-    plotBS(e, 2*N-2, 2*N+2, title="TI Film, Spin: +z & -z, J=0.02, 4 bands")
+    # print(S)
+    xRange, yRange, Nx, Ny = 0.05, 0.05, 30, 30
+    X_ = np.linspace(-xRange, xRange, Nx+1, endpoint=True)
+    Y_ = np.linspace(-yRange, yRange, Ny+1, endpoint=True)
+    h = Hamiltonian(N=N, J=J)
+    e = Eig(h, xRange=yRange, yRange=yRange, Nx=Nx, Ny=Ny)
+    plotBS(e, 2*N-2, 2*N+2, X=X_, Y=Y_,
+           title="TI Film, Spin: +z & -z, J=0.02, 4 bands")
