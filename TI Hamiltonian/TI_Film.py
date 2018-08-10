@@ -134,15 +134,14 @@ def plotBS(E, start, end, X=X_, Y=Y_, filename="", title=""):
 
 if __name__ == "__main__":
     N, J = 20, 0.02
-    S_ = np.zeros([N, 3])
-    for i in range(N):
-        S_[i, 0] = 1
-        S_[i, 1] = np.pi/2
-        S_[i, 2] = np.pi/2
-    S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
-                    * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
-    # print(S)
+    _S = np.zeros([N, 3])
+    for i in range(int(N/2)):
+        _S[i, 0], _S[N-i-1] = 1, -1
+    S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0] *
+                    np.sin(s[1]) * np.sin(s[2]), s[0]*np.cos(s[1])])for s in _S])
+
+    print(S)
     h = Hamiltonian(N=N, J=J, S=S)
     e = Eig(h)
 
-    plotBS(e, 2*N-2, 2*N+2, title="TI Film: x Spin Term, J=0.02, 4 bands")
+    plotBS(e, 2*N-2, 2*N+2, title="TI Film, Spin: +z & -z, J=0.02, 4 bands")
