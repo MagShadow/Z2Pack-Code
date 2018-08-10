@@ -114,8 +114,8 @@ def Eig(h, xRange=xRange, yRange=yRange, Nx=Nx, Ny=Ny):
     print(N)
     temp = [([([bs[i, j, n] for j in range(Ny+1)]) for i in range(Nx+1)])
             for n in range(4*N)]
-    _Eig = EigenSys(temp)
-    return _Eig
+    # _Eig = EilgenSys(temp)
+    return np.array(temp)
     # return(np.array([([([bs[i, j, n] for j in range(Ny+1)]) for i in range(Nx+1)])
     #                  for n in range(4*N)]))
 
