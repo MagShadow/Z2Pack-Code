@@ -23,7 +23,7 @@ sfname = os.path.join("SearchResult", nt())
 def RdSch(index, q=None):
     random.seed()
 
-    print("index=", index)
+    print("Index %d started at %s" % (index, datetime.now()))
     N, J = 20, 0.02
     S_ = np.zeros([N, 3])
     for i in range(N):
@@ -37,7 +37,7 @@ def RdSch(index, q=None):
     S = S*random.random()
     # print(S)
     h = Hamiltonian(N=N, J=J)
-    res = TIC.Calc(h, CalcZ2=True)
+    res = TIC.Calc(h, CalcZ2=True, LogOut=False)
     # print(res.Chern)
     if res.Z2:
         # print("True!")
@@ -62,6 +62,8 @@ def RdSch(index, q=None):
                 #     print('Run task %s (%s)...' % (name, os.getpid()))
                 #     start = time.time() #     time.sleep(random.random() * 3)
                 #     end = time.time()
+    print("Index %d ended at %s, Chern=%.3f, Z2=%s" %
+          (index, datetime.now(), res.Chern, str(res._Z2)))
 
 
 def Search(N):

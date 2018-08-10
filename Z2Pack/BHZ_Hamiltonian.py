@@ -9,12 +9,12 @@ pauli_y = np.array([[0, -1j], [1j, 0]], dtype=complex)
 pauli_z = np.array([[1, 0], [0, -1]], dtype=complex)
 pauli_vector = list([pauli_x, pauli_y, pauli_z])
 
-settings = {'num_lines': 51,
-            'pos_tol': 1e-3,
-            'gap_tol': 0.1,
-            'move_tol': 0.1,
-            'iterator': range(50, 201, 2),
-            'min_neighbour_dist': 1e-3,
+settings = {'num_lines': 41,
+            'pos_tol': 5e-3,
+            'gap_tol': 0.05,
+            'move_tol': 0.2,
+            'iterator': range(40, 201, 2),
+            'min_neighbour_dist': 1e-4,
             }
 
 # d=58 angstrom, A=-3.62, B=-18.0, C=-0.0180, D=-0.594, M=0.00922
@@ -28,9 +28,10 @@ def BHZ(M, B):
     #A, C, D = 1, 0, 1/2
     # k=(kx,ky,kz)
     # \epsilon(k)=C-D*k^2
+    KScale = 8
 
     def h(k):
-        kx, ky = k[0]*2*np.pi, k[1]*2*np.pi
+        kx, ky = k[0]*2*np.pi/KScale, k[1]*2*np.pi/KScale
         return (C-D*(kx*kx+ky*ky))*identity+A*kx*pauli_x+A*ky*pauli_y+(M-B*(kx*kx+ky*ky))*pauli_z
     # print(h([0, 0, 0]))
 
@@ -68,13 +69,13 @@ result = z2pack.surface.run(
 
 ######################################################
 # Test For Manually Calculation
-def surf(k1, k2): return[k1-0.5, k2-0.5]
+# def surf(k1, k2): return[k1-0.5, k2-0.5]
 
 
-res = [z2pack.surface.run(system=z2pack.hm.System(
-    h0, dim=2, bands=[i]), surface=surf, **settings) for i in range(2)]
-c = np.array([z2pack.invariant.chern(r) for r in res])
-print(c)
+# res = [z2pack.surface.run(system=z2pack.hm.System(
+#     h0, dim=2, bands=[i]), surface=surf, **settings) for i in range(2)]
+# c = np.array([z2pack.invariant.chern(r) for r in res])
+# print(c)
 
 
 # def _pol_step(pol_list):
@@ -98,39 +99,48 @@ print(c)
 # z2pack.plot.wcc(result, axis=ax)
 # plt.show()
 ######################################################
-# res1 = z2pack.surface.run(
-#     system=s0,
-#     # parameter of surface is moduled by 2pi
-#     surface=lambda k1, k2: [k2-0.5, k1/2-0.5],
-#     **settings
-#     # save_file="savefile.msgpack"
-# )
-# res2 = z2pack.surface.run(
-#     system=s0,
-#     # parameter of surface is moduled by 2pi
-#     surface=lambda k1, k2: [k2-0.5, k1/2],
-#     **settings
-#     # save_file="savefile.msgpack"
-# )
-# print("Chern=", z2pack.invariant.chern(result))
-# print("Z2_1=", z2pack.invariant.z2(res1))
-# print("Z2_2=", z2pack.invariant.z2(res2))
-# print("Z2=", z2pack.invariant.z2(result))
-# fig, ax = plt.subplots(1,3)
-# z2pack.plot.wcc(res1, axis=ax[0])
-# z2pack.plot.wcc(res2, axis=ax[1])
-# z2pack.plot.wcc(result, axis=ax[2])
-# plt.savefig("BHZ-Z2test.png")
-# fig, ax = plt.subplots()
-# # z2pack.plot.chern(result, axis=ax[0])
+res1 = z2pack.surface.run(
+    system=s0,
+    # parameter of surface is moduled by 2pi
+    surface=lambda k1, k2: [k2-0.5, k1/2-0.5],
+    **settings
+    # save_file="savefile.msgpack"
+)
+res2 = z2pack.surface.run(
+    system=s0,
+    # parameter of surface is moduled by 2pi
+    surface=lambda k1, k2: [k2-0.5, k1/2],
+    **settings
+    # save_file="savefile.msgpack"
+)
+print("Chern=", z2pack.invariant.chern(result))
+print("Z2_1=", z2pack.invariant.z2(res1))
+print("Z2_2=", z2pack.invariant.z2(res2))
+print("Z2_Total", z2pack.invariant.z2(result))
+fig, ax = plt.subplots(1, 3)
+z2pack.plot.wcc(res1, axis=ax[0])
+z2pack.plot.wcc(res2, axis=ax[1])
+z2pack.plot.wcc(result, axis=ax[2])
+_Z2 = [z2pack.invariant.z2(res1), z2pack.invariant.z2(
+    res2), z2pack.invariant.z2(result)]
+for i in range(3):
+    ax[i].set_xlabel(r"$k_x$")
+    ax[i].set_ylabel(r"$\bar{x}$")
+
+
+ax[0].set_title("Z2_Left="+str(_Z2[0]))
+ax[1].set_title("Z2_Right="+str(_Z2[1]))
+ax[2].set_title("Z2_Total="+str(_Z2[2]))
+fig.suptitle("QSH (BHZ Hamiltonian, K_Scale=10)")
+plt.savefig("BHZ-Z2test.png")
+
+# z2pack.plot.chern(result, axis=ax[0])
 # z2pack.plot.wcc(result, axis=ax)
-# ax.set_xlabel(r"$k_x$")
-# ax.set_ylabel(r"$\bar{x}$")
-# ax.set_title("QSH (BHZ Hamiltonian)")
+
 # ax.set_xlim(0.9, 1.0)
 # # ax.set_xlim(-0.01, 0.2)
 # # ax[0].set_xlim(-1, 2)
 # # ax[0].set_ylim(-1, 2)
 # # ax[1].set_xlim(-1, 2)
 # # ax[1].set_ylim(-1, 2)
-# plt.savefig("BHZ.png")
+# plt.savefig("BHZ-WCC.png")
