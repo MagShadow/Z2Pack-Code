@@ -4,6 +4,8 @@ import numpy as np
 from scipy import linalg
 from matplotlib import pyplot as plt
 from numbers import Integral
+import matplotlib as mpl
+mpl.use("Agg")
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter

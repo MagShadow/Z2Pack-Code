@@ -1,5 +1,7 @@
 import z2pack
 import numpy as np
+import matplotlib as mpl
+mpl.use("Agg")
 from matplotlib import pyplot as plt
 import os
 import logging
@@ -154,4 +156,5 @@ if __name__ == "__main__":
     # plotBS(e, 2*N-2, 2*N+2, title="TI Film: x&-x, J=0.02, 4 bands")
     res = Calc(h, KScale=5, CalcZ2=True, LogOut=True)
     print("Chern=", res.Chern)
-    res.plotZ2(title="Spin-z, N=12, J=0.08",filename="Spin z N=12 J=0.008.png")
+    res.plotZ2(title="Spin-z, N=12, J=0.08",
+               filename="Spin z N=12 J=0.008.png")
