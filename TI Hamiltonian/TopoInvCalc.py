@@ -13,12 +13,12 @@ pauli_y = np.array([[0, -1j], [1j, 0]], dtype=complex)
 pauli_z = np.array([[1, 0], [0, -1]], dtype=complex)
 pauli_vector = list([pauli_x, pauli_y, pauli_z])
 
-settings = {'num_lines': 31,
-            'pos_tol':  1e-2,
-            'gap_tol': 0.05,
-            'move_tol': 0.2,
-            'iterator': range(30, 51, 4),
-            'min_neighbour_dist': 5e-4,
+settings = {'num_lines': 81,
+            'pos_tol':  1e-3,
+            'gap_tol': 0.005,
+            'move_tol': 0.3,
+            'iterator': range(80, 121, 4),
+            'min_neighbour_dist': 1e-5,
             }
 
 
@@ -101,7 +101,6 @@ def Calc(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True, LogOu
     return(Res())
 
 
-
 def Calc_Man(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True):
     '''
     Try to calculate the Z2 index manually by calculating the Chern Number of Each Band.
@@ -140,28 +139,19 @@ def Calc_Man(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True):
 
 
 if __name__ == "__main__":
-    N, J = 20, 0.02
-    S_ = np.zeros([N, 3])
-    for i in range(N):
-        S_[i, 0] = 1
-        S_[i, 1] = 0
-        S_[i, 2] = 0
-    # for i in range(20):
+    N, J = 12, 0.008
+    # S_ = np.zeros([N, 3])
+    # for i in range(N):
     #     S_[i, 0] = 1
-    #     S_[i, 1] = np.pi/2
-    #     S_[i, 2] = np.pi/2
-    # for i in range(10, N):
-    #     S_[i, 0] = 1
-    #     S_[i, 1] = np.pi/2
-    #     S_[i, 2] = np.pi*3/2
-    S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
-                    * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
+    #     S_[i, 1] = 0
+    #     S_[i, 2] = 0
+    # S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
+    #                 * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
     # print(S)
     h = Hamiltonian(N=N, J=J)
-    # Calc_Man(h, CalcZ2=False)
 
     # e = Eig(h)
     # plotBS(e, 2*N-2, 2*N+2, title="TI Film: x&-x, J=0.02, 4 bands")
-    res = Calc(h, CalcZ2=False, LogOut=False)
-    print(res.Chern)
-    res.plotChern(title="Spin-z, J=0.02")
+    res = Calc(h, KScale=5, CalcZ2=True, LogOut=True)
+    print("Chern=", res.Chern)
+    res.plotZ2(title="Spin-z, N=12, J=0.08",filename="Spin z N=12 J=0.008.png")
