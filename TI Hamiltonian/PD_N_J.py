@@ -131,6 +131,27 @@ def Run_2(_N, _J, i, j, Phase):
     return
 
 
+def Run_3(_N, _J, i, j, Phase, n=1):
+    r'''
+    This func calculate the system with spin distribution: +z in the first $n$ layer and -z in the last $n$ layer.
+
+    '''
+    print("Start Calculation: N=%d , J=%.3f" % (_N, _J))
+    _S = np.zeros([_N, 3])
+    assert n<=int(_N/2),"n should be less than half of the layer #。"
+    for i in range(n):
+        _S[i, 0], _S[_N-i-1, 0] = 1, -1
+    S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0] *
+                    np.sin(s[1]) * np.sin(s[2]), s[0]*np.cos(s[1])])for s in _S])
+    print(S)
+    h = Hamiltonian(N=_N, J=_J, S=S)
+    res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
+    Phase[i][j] = TopoOrder(res)
+    print("End Calculation: N=%d , J=%.3f, Result: C=%.4f , Z2=%s" %
+          (_N, _J, res.Chern, str(res._Z2)))
+    return
+
+
 def PhaseDiag(func, title="Phase Diagram of N & J"):
     T_start = datetime.now()
     print("Start Calculation at ", str(T_start))
@@ -166,4 +187,4 @@ def PhaseDiag(func, title="Phase Diagram of N & J"):
 
 if __name__ == "__main__":
     # CalcGap()
-    PhaseDiag(Run_2, title="Phase Diagram of N & J (Spin +x & -x)")
+    PhaseDiag(Run_3, title="Phase Diagram of N & J (1 layer of Spin +z & -z)")
