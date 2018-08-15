@@ -104,7 +104,7 @@ def mkdir(path):
 
 
 if __name__ == "__main__":
-    Search(100)
+    Search(300)
     # print('Parent process %s.' % os.getpid())
     # p = Pool()
     # for i in range(20):
