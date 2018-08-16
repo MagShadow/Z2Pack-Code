@@ -186,7 +186,7 @@ def plotLine(h, start, end, xRange=0.05, Nx=20, axis="x", filename="", title="")
 
 
 if __name__ == "__main__":
-    N, J = 12, 0.005
+    N, J = 12, 0.01
     # _S = np.zeros([N, 3])
     # for i in range(int(N/2)):
     #     _S[i, 0], _S[N-i-1, 0] = 1, -1
@@ -194,10 +194,20 @@ if __name__ == "__main__":
     #                 np.sin(s[1]) * np.sin(s[2]), s[0]*np.cos(s[1])])for s in _S])
 
     # print(S)
+    S_ = np.zeros([N, 3])
+    S_[0, 0], S_[-1, 0] = 1, 1
+    # for i in range(N):
+    #     S_[i, 0] = 1
+    #     S_[i, 1] = 0
+    #     S_[i, 2] = 0
+    S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
+                    * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
+
     xRange, yRange, Nx, Ny = 0.05, 0.05, 30, 30
     X_ = np.linspace(-xRange, xRange, Nx+1, endpoint=True)
     Y_ = np.linspace(-yRange, yRange, Ny+1, endpoint=True)
     h = Hamiltonian(N=N, J=J)
-    e = Eig(h, xRange=yRange, yRange=yRange, Nx=Nx, Ny=Ny)
-    plotBS(e, 2*N-2, 2*N+2, X=X_, Y=Y_,
-           title="TI Film, Spin: +z & -z, J=0.02, 4 bands")
+    plotLine(h, 2*N-2, 2*N+2, xRange=xRange, Nx=Nx)
+    # e = Eig(h, xRange=xRange, yRange=yRange, Nx=Nx, Ny=Ny)
+    # plotBS(e, 2*N-2, 2*N+2, X=X_, Y=Y_,
+    #        title="TI Film, Spin: +z & -z, J=0.02, 4 bands")

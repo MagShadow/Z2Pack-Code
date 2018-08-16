@@ -3,7 +3,7 @@ import numpy as np
 from scipy import linalg
 from numbers import Integral
 import matplotlib as mpl
-# mpl.use("Agg")
+mpl.use("Agg")
 from matplotlib import pyplot as plt
 
 from TI_Film import Eig, plotLine
@@ -42,17 +42,26 @@ def Hamiltonian(M_T=M_T, M_B=M_B):
 
     return _ham
 
+
 def Ham_Small(M_T=M_T, M_B=M_B):
     def _m(kx, ky):
         return m0-m1*(kx*kx+ky*ky)
 
     def _h0(kx, ky):
         return hbar*hbar*(kx*kx+ky*ky)/m0
-    
-    def _ham(kx,ky):
-        H=np.zeros([4,4],dtype=complex)
-        
+
+    def _ham(kx, ky):
+        H = np.zeros([4, 4], dtype=complex)
+        H[0:2, 0:2] = hvf*(pauli_x*kx-pauli_y*ky)+M_T*pauli_z
+        H[2:4, 2:4] = -hvf*(pauli_x*kx-pauli_y*ky)+M_B*pauli_z
+        H[0:2, 2:4] = H[2:4, 0:2] = _m(kx, ky)*identity
+        # print(H)
+        return H
+    return _ham
+
 
 if __name__ == "__main__":
-    h = Hamiltonian(M_T, M_B)
-    plotLine(h, 0, 8, xRange=2/a_lat, Nx=40)
+    # h = Hamiltonian(M_T, M_B)
+    # plotLine(h, 0, 8, xRange=2/a_lat, Nx=40)
+    h = Ham_Small(M_T, M_B)
+    plotLine(h, 0, 4, xRange=1/a_lat, Nx=40)
