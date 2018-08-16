@@ -2,10 +2,11 @@
 import os
 import numpy as np
 from scipy import linalg
-from matplotlib import pyplot as plt
 from numbers import Integral
 import matplotlib as mpl
 mpl.use("Agg")
+from matplotlib import pyplot as plt
+
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
@@ -155,6 +156,33 @@ def plotBS(E, start, end, X=X_, Y=Y_, filename="", title=""):
     else:
         path = os.path.join("Pictures", filename+".png")
         plt.savefig(path)
+
+
+def plotLine(h, start, end, xRange=0.05, Nx=20, axis="x", filename="", title=""):
+    assert isinstance(Nx, Integral), "N should be an integer!"
+
+    step = 2*xRange/Nx
+    if axis == "x":
+        X = np.array([[-xRange+step*i, 0]for i in range(Nx+1)])
+    else:
+        X = np.array([[0, -xRange+step*i]for i in range(Nx+1)])
+    # print(X)
+    N_band = h(0, 0).shape[0]
+    E = np.zeros([Nx+1, N_band], dtype=float)
+    for i in range(Nx+1):
+        temp = np.array([x.real for x in (linalg.eig(h(X[i, 0], X[i, 1]))[0])])
+        temp.sort()
+        E[i] = temp
+    # print(Eig)
+    Z = np.array([[E[i, j] for i in range(Nx+1)] for j in range(N_band)])
+    # print(Z)
+    plt.subplot(1, 1, 1)
+    x = np.linspace(-xRange, xRange, Nx+1, endpoint=True)
+
+    for b in Z[start:end]:
+        plt.plot(x, b)
+    plt.show()
+    # print("End!")
 
 
 if __name__ == "__main__":

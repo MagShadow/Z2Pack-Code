@@ -1,13 +1,14 @@
 import z2pack
 import numpy as np
 import matplotlib as mpl
-mpl.use("Agg")
+# mpl.use("Agg")
 from matplotlib import pyplot as plt
 import os
 import logging
 from datetime import datetime
 
-from TI_Film import Hamiltonian, Eig, plotBS
+from TI_Film import Eig, plotBS
+from TI_AFM import Hamiltonian
 # Constant for Z2Pack Calculation
 identity = np.identity(2, dtype=complex)
 pauli_x = np.array([[0, 1], [1, 0]], dtype=complex)
@@ -141,7 +142,7 @@ def Calc_Man(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True):
 
 
 if __name__ == "__main__":
-    N, J = 12, 0.008
+    # N, J = 12, 0.008
     # S_ = np.zeros([N, 3])
     # for i in range(N):
     #     S_[i, 0] = 1
@@ -150,11 +151,11 @@ if __name__ == "__main__":
     # S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
     #                 * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
     # print(S)
-    h = Hamiltonian(N=N, J=J)
+    # h = Hamiltonian(N=N, J=J)
 
     # e = Eig(h)
     # plotBS(e, 2*N-2, 2*N+2, title="TI Film: x&-x, J=0.02, 4 bands")
+    h = Hamiltonian(0.1, 0.1)
     res = Calc(h, KScale=5, CalcZ2=True, LogOut=True)
     print("Chern=", res.Chern)
-    res.plotZ2(title="Spin-z, N=12, J=0.08",
-               filename="Spin z N=12 J=0.008.png")
+    res.plotZ2()
