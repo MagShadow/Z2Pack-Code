@@ -9,7 +9,8 @@ import matplotlib as mpl
 mpl.use("Agg")  # 在服务器端没有DISPLAY资源，因此必须换成无交互的后端。默认为"TkAgg"。
 from matplotlib import pyplot as plt
 
-from TI_AFM import Ham_Small as Hamiltonian
+# from TI_AFM import Ham_Small as Hamiltonian
+from TI_AFM import Hamiltonian
 
 from json import dumps, loads
 from itertools import product
@@ -67,7 +68,7 @@ def PhaseDiag(func, title="Phase Diagram of M_T & M_B"):
     T_start = datetime.now()
     print("Start Calculation at ", str(T_start))
 
-    TRange, BRange, N_T, N_B = 0.2, 0.2, 40, 40
+    TRange, BRange, N_T, N_B = 0.2, 0.2, 10, 10
     T = np.linspace(-TRange, TRange, num=N_T, endpoint=True)
     B = np.linspace(-BRange, BRange, num=N_B, endpoint=True)
 
