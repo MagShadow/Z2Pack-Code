@@ -9,8 +9,8 @@ import matplotlib as mpl
 mpl.use("Agg")  # 在服务器端没有DISPLAY资源，因此必须换成无交互的后端。默认为"TkAgg"。
 from matplotlib import pyplot as plt
 
-# from TI_AFM import Ham_Small as Hamiltonian
-from TI_AFM import Hamiltonian
+from TI_AFM import Ham_Small as Hamiltonian
+# from TI_AFM import Hamiltonian
 
 from json import dumps, loads
 from itertools import product
@@ -30,6 +30,13 @@ settings = {'num_lines': 51,
             'iterator': range(50, 81, 4),
             'min_neighbour_dist': 1e-4,
             }
+settings_high = {'num_lines': 51,
+                 'pos_tol':  5e-4,
+                 'gap_tol': 0.001,
+                 'move_tol': 0.5,
+                 'iterator': range(50, 201, 5),
+                 'min_neighbour_dist': 5e-6,
+                 }
 
 
 def Draw(T, B, P, title="Phase Diagram of M_T & M_B", filename=""):
@@ -40,6 +47,9 @@ def Draw(T, B, P, title="Phase Diagram of M_T & M_B", filename=""):
     # np.append(T, 2*T[-1]-T[-2]), np.append(B, 2*B[-1]-B[-2]))
     x, y = np.meshgrid(T, B)
     c = ax.pcolormesh(x, y, np.array(P).T, cmap=cmap, vmin=0, vmax=3)
+    ax.set_xlabel(r"$M_T$")
+    ax.set_ylabel(r"$M_B$")
+
     ax2 = fig.add_axes([0.92, 0.1, 0.03, 0.8])
     cb = mpl.colorbar.ColorbarBase(ax2, cmap=cmap, norm=norm)
     ax.set_title(title)
@@ -57,18 +67,22 @@ def Run_1(M_T, M_B, i, j, Phase):
     print("Start Calculation: M_T=%0.3f , M_B=%.3f" % (M_T, M_B))
 
     h = Hamiltonian(M_T, M_B)
-    res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
-    Phase[i][j] = TIC.TopoOrder(res, _Chern_tol=0.3)
-    print("End Calculation: M_T=%0.3f , M_B=%.3f, Result: C=%.4f , Z2=%s" %
+    res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings_high)
+    Phase[i][j] = TIC.TopoOrder(res)
+    if Phase[i][j] == 3:
+        print("\n"+"Something Interesting!")
+        print(res.Chern, res._Z2)
+        print("M_T=%.3f,M_B=%.3f" % (M_T, M_B)+"\n")
+    print("End Calculation: M_T=%.3f , M_B=%.3f, Result: C=%.4f , Z2=%s" %
           (M_T, M_B, res.Chern, str(res._Z2)))
     return
 
 
-def PhaseDiag(func, title="Phase Diagram of M_T & M_B"):
+def PhaseDiag(func, title="Phase Diagram of M_T & M_B: -0.2~0.2"):
     T_start = datetime.now()
     print("Start Calculation at ", str(T_start))
 
-    TRange, BRange, N_T, N_B = 0.2, 0.2, 10, 10
+    TRange, BRange, N_T, N_B = 0.2, 0.2, 51, 51
     T = np.linspace(-TRange, TRange, num=N_T, endpoint=True)
     B = np.linspace(-BRange, BRange, num=N_B, endpoint=True)
 
