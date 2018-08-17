@@ -19,16 +19,16 @@ pauli_y = np.array([[0, -1j], [1j, 0]], dtype=complex)
 pauli_z = np.array([[1, 0], [0, -1]], dtype=complex)
 pauli_vector = list([pauli_x, pauli_y, pauli_z])
 
-settings = {'num_lines': 61,
-            'pos_tol':  5e-3,
-            'gap_tol': 0.01,
-            'move_tol': 0.2,
-            'iterator': range(60, 121, 4),
-            'min_neighbour_dist': 1e-5,
+settings = {'num_lines': 51,
+            'pos_tol':  5e-4,
+            'gap_tol': 0.001,
+            'move_tol': 0.5,
+            'iterator': range(50, 201, 5),
+            'min_neighbour_dist': 5e-6,
             }
 
 
-def Calc(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True, LogOut=True, Timer=True, settings=settings):
+def Calc(ham, bands=None, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True, LogOut=True, Timer=True, settings=settings):
     if not LogOut:
         logging.getLogger('z2pack').setLevel(logging.ERROR)
 
@@ -40,7 +40,7 @@ def Calc(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True, LogOu
             if Timer:
                 T_start = datetime.now()
 
-            s0 = z2pack.hm.System(h0, dim=2)
+            s0 = z2pack.hm.System(h0, bands=bands, dim=2)
             result = z2pack.surface.run(
                 system=s0,
                 # parameter of surface is moduled by 2pi
@@ -107,13 +107,13 @@ def Calc(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True, LogOu
     return(Res())
 
 
-def Calc_Man(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True):
+def Calc_Man(ham, bands=None, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True):
     '''
     Try to calculate the Z2 index manually by calculating the Chern Number of Each Band.
     Still under constructing
     '''
     def h0(k): return ham(k[0]/KScale, k[1]/KScale)
-    s0 = z2pack.hm.System(h0, dim=2)
+    s0 = z2pack.hm.System(h0, bands=bands, dim=2)
     result = z2pack.surface.run(
         system=s0,
         # parameter of surface is moduled by 2pi
@@ -145,21 +145,27 @@ def Calc_Man(ham, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True):
 
 
 if __name__ == "__main__":
-    # N, J = 12, 0.02
-    # S_ = np.zeros([N, 3])
-    # S_[0, 0], S_[-1, 0] = 1, 1
-    # # for i in range(N):
-    # #     S_[i, 0] = 1
-    # #     S_[i, 1] = 0
-    # #     S_[i, 2] = 0
-    # S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
-    #                 * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
-    # # print(S)
-    # h = Hamiltonian(N=N, J=J, S=S)
+    N, J = 40, 0.00
+    S_ = np.zeros([N, 3])
+    S_[0, 0], S_[-1, 0] = 1, -1
+    S_[1, 0], S_[-2, 0] = 1, -1
+    S_[2, 0], S_[-3, 0] = 1, -1
 
+    # for i in range(N):
+    #     S_[i, 0] = 1
+    #     S_[i, 1] = 0
+    #     S_[i, 2] = 0
+    S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
+                    * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
+    print(S)
+    h = Hamiltonian(N=N, J=J, S=S)
+
+    # from TI_Film import plotLine
+    # plotLine(h, 2*N-2, 2*N+2)
     # e = Eig(h)
-    # plotBS(e, 2*N-2, 2*N+2, title="TI Film: x&-x, J=0.02, 4 bands")
-    h = Ham_Small(0.02, 0.02)
-    res = Calc(h, KScale=1, CalcZ2=False, LogOut=True)
+    # plotBS(e, 2*N-2, 2*N+2, title="TI Film: z&-z in 3 layers, J=0.01, 4 bands")
+    # h = Ham_Small(0.02, 0.02)
+    # bands=[2*N-2, 2*N],
+    res = Calc(h,  KScale=5, CalcZ2=False, LogOut=True)
     # print("Chern=", res.Chern)
     res.plotChern()
