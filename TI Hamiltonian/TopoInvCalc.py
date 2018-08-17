@@ -27,6 +27,17 @@ settings = {'num_lines': 51,
             'min_neighbour_dist': 5e-6,
             }
 
+def TopoOrder(res, _Chern_tol=0.1):
+    '''
+    Accept an Result from TopoInvCalc,
+    return
+        0 if trivial;
+        1 if Z2 but not Chern;
+        2 if Chern but not Z2;
+        3 if Chern and Z2;
+    '''
+    C, Z = 1 if abs(res.Chern) > _Chern_tol else 0, int(res.Z2)
+    return C*2+Z
 
 def Calc(ham, bands=None, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True, LogOut=True, Timer=True, settings=settings):
     if not LogOut:

@@ -3,7 +3,7 @@ import numpy as np
 from scipy import linalg
 from numbers import Integral
 import matplotlib as mpl
-mpl.use("Agg")
+# mpl.use("Agg")
 from matplotlib import pyplot as plt
 
 from TI_Film import Eig, plotLine
@@ -63,5 +63,12 @@ def Ham_Small(M_T=M_T, M_B=M_B):
 if __name__ == "__main__":
     # h = Hamiltonian(M_T, M_B)
     # plotLine(h, 0, 8, xRange=2/a_lat, Nx=40)
-    h = Ham_Small(M_T, M_B)
-    plotLine(h, 0, 4, xRange=1/a_lat, Nx=40)
+    from TopoInvCalc import Calc
+    TRange, BRange, N_T, N_B = 0.1, 0.1, 10, 10
+    T = np.linspace(-TRange, TRange, num=N_T, endpoint=True)
+    B = np.linspace(-BRange, BRange, num=N_B, endpoint=True)
+    h = Ham_Small(T[8], B[9])
+    res = Calc(h, KScale=5, CalcZ2=True, LogOut=True)
+    print(res.Chern, res._Z2)
+    res.plotChern()
+    # plotLine(h, 0, 4, xRange=1/a_lat, Nx=40)

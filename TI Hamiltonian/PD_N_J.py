@@ -50,17 +50,7 @@ def CalcGap():
     return
 
 
-def TopoOrder(res, _Chern_tol=0.1):
-    '''
-    Accept an Result from TopoInvCalc,
-    return
-        0 if trivial;
-        1 if Z2 but not Chern;
-        2 if Chern but not Z2;
-        3 if Chern and Z2;
-    '''
-    C, Z = 1 if abs(res.Chern) > _Chern_tol else 0, int(res.Z2)
-    return C*2+Z
+
 
 
 def Draw(N, J, P, title="Phase Diagram of N & J", filename=""):
@@ -86,7 +76,7 @@ def Run_0(_N, _J, i, j, Phase):
     h = Hamiltonian(N=_N, J=_J)
     res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
     print(res.Chern)
-    Phase[i][j] = TopoOrder(res)
+    Phase[i][j] = TIC.TopoOrder(res)
     return
 
 
@@ -103,7 +93,7 @@ def Run_1(_N, _J, i, j, Phase):
                     np.sin(s[1]) * np.sin(s[2]), s[0]*np.cos(s[1])])for s in _S])
     h = Hamiltonian(N=_N, J=_J, S=S)
     res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
-    Phase[i][j] = TopoOrder(res)
+    Phase[i][j] = TIC.TopoOrder(res)
     print("End Calculation: N=%d , J=%.3f, Result: C=%.4f , Z2=%s" %
           (_N, _J, res.Chern, str(res._Z2)))
     return
@@ -125,7 +115,7 @@ def Run_2(_N, _J, i, j, Phase):
     # print(S)
     h = Hamiltonian(N=_N, J=_J, S=S)
     res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
-    Phase[i][j] = TopoOrder(res)
+    Phase[i][j] = TIC.TopoOrder(res)
     print("End Calculation: N=%d , J=%.3f, Result: C=%.4f , Z2=%s" %
           (_N, _J, res.Chern, str(res._Z2)))
     return
@@ -146,7 +136,7 @@ def Run_3(_N, _J, i, j, Phase, n=1):
     # print(S)
     h = Hamiltonian(N=_N, J=_J, S=S)
     res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
-    Phase[i][j] = TopoOrder(res)
+    Phase[i][j] = TIC.TopoOrder(res)
     print("End Calculation: N=%d , J=%.3f, Result: C=%.4f , Z2=%s" %
           (_N, _J, res.Chern, str(res._Z2)))
     return
@@ -167,7 +157,7 @@ def Run_4(_N, _J, i, j, Phase, n=1):
     # print(S)
     h = Hamiltonian(N=_N, J=_J, S=S)
     res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
-    Phase[i][j] = TopoOrder(res)
+    Phase[i][j] = TIC.TopoOrder(res)
     print("End Calculation: N=%d , J=%.3f, Result: C=%.4f , Z2=%s" %
           (_N, _J, res.Chern, str(res._Z2)))
     return
