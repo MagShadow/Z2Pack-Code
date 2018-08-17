@@ -8,7 +8,13 @@ from matplotlib import pyplot as plt
 
 from TI_Film import Eig, plotLine
 # from TI_Film import Hamiltonian as Ham_Flim
-
+settings = {'num_lines': 81,
+            'pos_tol':  5e-4,
+            'gap_tol': 0.01,
+            'move_tol': 0.4,
+            'iterator': range(80, 121, 5),
+            'min_neighbour_dist': 1e-5,
+            }
 identity = np.identity(2, dtype=complex)
 pauli_x = np.array([[0, 1], [1, 0]], dtype=complex)
 pauli_y = np.array([[0, -1j], [1j, 0]], dtype=complex)
@@ -64,11 +70,13 @@ if __name__ == "__main__":
     # h = Hamiltonian(M_T, M_B)
     # plotLine(h, 0, 8, xRange=2/a_lat, Nx=40)
     from TopoInvCalc import Calc
-    TRange, BRange, N_T, N_B = 0.1, 0.1, 10, 10
-    T = np.linspace(-TRange, TRange, num=N_T, endpoint=True)
-    B = np.linspace(-BRange, BRange, num=N_B, endpoint=True)
-    h = Ham_Small(T[8], B[9])
-    res = Calc(h, KScale=5, CalcZ2=True, LogOut=True)
-    print(res.Chern, res._Z2)
+    # TRange, BRange, N_T, N_B = 0.1, 0.1, 10, 10
+    # T = np.linspace(-TRange, TRange, num=N_T, endpoint=True)
+    # B = np.linspace(-BRange, BRange, num=N_B, endpoint=True)
+    t, b = 0.04, 0.06
+    # print(t, b)
+    h = Ham_Small(t, b)
+    res = Calc(h, KScale=1, CalcZ2=False, LogOut=True, settings=settings)
+    # print(res.Chern, res._Z2)
     res.plotChern()
     # plotLine(h, 0, 4, xRange=1/a_lat, Nx=40)
