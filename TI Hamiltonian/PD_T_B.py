@@ -66,16 +66,16 @@ def PhaseDiag(func, title="Phase Diagram of M_T & M_B"):
     T_start = datetime.now()
     print("Start Calculation at ", str(T_start))
 
-    TRange, BRange, N_T, N_B = 0.1, 0.1, 10, 10
-    T = np.linspace(-TRange, TRange, num=N_T+1, endpoint=True)
-    B = np.linspace(-BRange, BRange, num=N_B+1, endpoint=True)
+    TRange, BRange, N_T, N_B = 0.2, 0.2, 40, 40
+    T = np.linspace(-TRange, TRange, num=N_T, endpoint=True)
+    B = np.linspace(-BRange, BRange, num=N_B, endpoint=True)
 
     p, m = Pool(), Manager()
-    Phase = m.list([m.list([0]*(N_B+1)) for i in range(N_T+1)])
+    Phase = m.list([m.list([0]*(N_B)) for i in range(N_T)])
     # 二维数组实在是太坑爹了......
     # 坑爹*2： 内层的m.list是对象，所以如果直接用[...]*N的方式写会导致写入引用
 
-    for i, j in product(list(range(N_T+1)), list(range(N_B+1))):
+    for i, j in product(list(range(N_T)), list(range(N_B))):
         M_T, M_B = T[i], B[j]
         p.apply_async(func, args=(M_T, M_B, i, j, Phase,))
 
