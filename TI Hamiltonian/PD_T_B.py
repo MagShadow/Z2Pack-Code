@@ -47,8 +47,8 @@ def Draw(T, B, P, title="Phase Diagram of M_T & M_B", filename=""):
     # np.append(T, 2*T[-1]-T[-2]), np.append(B, 2*B[-1]-B[-2]))
     x, y = np.meshgrid(T, B)
     c = ax.pcolormesh(x, y, np.array(P).T, cmap=cmap, vmin=0, vmax=3)
-    ax.set_xlabel(r"$M_T$")
-    ax.set_ylabel(r"$M_B$")
+    ax.set_xlabel(r"$M_T/\rm eV$")
+    ax.set_ylabel(r"$M_B/\rm eV$")
 
     ax2 = fig.add_axes([0.92, 0.1, 0.03, 0.8])
     cb = mpl.colorbar.ColorbarBase(ax2, cmap=cmap, norm=norm)
@@ -78,11 +78,11 @@ def Run_1(M_T, M_B, i, j, Phase):
     return
 
 
-def PhaseDiag(func, title="Phase Diagram of M_T & M_B(Large Hamiltonian)"):
+def PhaseDiag(func, title="Phase Diagram of M_T & M_B"):
     T_start = datetime.now()
     print("Start Calculation at ", str(T_start))
 
-    TRange, BRange, N_T, N_B = 0.2, 0.2, 51, 51
+    TRange, BRange, N_T, N_B = 0.3, 0.3, 61, 61
     T = np.linspace(-TRange, TRange, num=N_T, endpoint=True)
     B = np.linspace(-BRange, BRange, num=N_B, endpoint=True)
 
@@ -113,4 +113,4 @@ def PhaseDiag(func, title="Phase Diagram of M_T & M_B(Large Hamiltonian)"):
 
 if __name__ == "__main__":
     # CalcGap()
-    PhaseDiag(Run_1)
+    PhaseDiag(Run_1,title=r"Phase Diagram of $M_T$ & $M_B$ ($m_0=0.05 \rm eV$)")
