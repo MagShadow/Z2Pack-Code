@@ -78,7 +78,11 @@ def Run_1(M_T, M_B, i, j, Phase):
     return
 
 
+<<<<<<< HEAD
 def PhaseDiag(func, title="Phase Diagram of M_T & M_B: -0.2~0.2"):
+=======
+def PhaseDiag(func, title="Phase Diagram of M_T & M_B(Large Hamiltonian)"):
+>>>>>>> ec282cd43c04c8d9ca1d80ff5cc35e768cf9290d
     T_start = datetime.now()
     print("Start Calculation at ", str(T_start))
 
