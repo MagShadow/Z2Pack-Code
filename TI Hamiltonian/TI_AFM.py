@@ -63,5 +63,5 @@ def Ham_Small(M_T=M_T, M_B=M_B):
 if __name__ == "__main__":
     # h = Hamiltonian(M_T, M_B)
     # plotLine(h, 0, 8, xRange=2/a_lat, Nx=40)
-    h = Ham_Small(M_T, M_B)
+    h = Ham_Small(0.06, 0.08)
     plotLine(h, 0, 4, xRange=1/a_lat, Nx=40)

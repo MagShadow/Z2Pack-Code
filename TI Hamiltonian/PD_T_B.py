@@ -19,7 +19,8 @@ from multiprocessing import Lock, Pool, Queue, Manager
 # 使用Manager().list在多进程通信
 # 在Python3.5下表现有问题：不报错，但是无法写入
 import TopoInvCalc as TIC
-from PD_N_J import TopoOrder, nt
+from PD_N_J import nt
+
 
 settings = {'num_lines': 51,
             'pos_tol':  1e-2,
@@ -56,7 +57,7 @@ def Run_1(M_T, M_B, i, j, Phase):
 
     h = Hamiltonian(M_T, M_B)
     res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
-    Phase[i][j] = TopoOrder(res)
+    Phase[i][j] = TIC.TopoOrder(res, _Chern_tol=0.3)
     print("End Calculation: M_T=%0.3f , M_B=%.3f, Result: C=%.4f , Z2=%s" %
           (M_T, M_B, res.Chern, str(res._Z2)))
     return
