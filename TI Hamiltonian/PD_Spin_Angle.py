@@ -65,7 +65,7 @@ def Run_1(_T, _J, i, j, Phase, n=None):
         _S[N-i-1, 2] = np.pi
     S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0] *
                     np.sin(s[1]) * np.sin(s[2]), s[0]*np.cos(s[1])])for s in _S])
-    print(S)
+    # print(S)
 
     h = Hamiltonian(N=N, J=_J, S=S)
     res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
