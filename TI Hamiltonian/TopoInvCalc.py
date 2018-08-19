@@ -19,12 +19,12 @@ pauli_y = np.array([[0, -1j], [1j, 0]], dtype=complex)
 pauli_z = np.array([[1, 0], [0, -1]], dtype=complex)
 pauli_vector = list([pauli_x, pauli_y, pauli_z])
 
-settings = {'num_lines': 51,
-            'pos_tol':  5e-4,
-            'gap_tol': 0.001,
+settings = {'num_lines': 31,
+            'pos_tol':  1e-5,
+            'gap_tol': 0.0001,
             'move_tol': 0.5,
-            'iterator': range(50, 201, 5),
-            'min_neighbour_dist': 5e-6,
+            'iterator': range(30, 401, 5),
+            'min_neighbour_dist': 1e-6,
             }
 
 def TopoOrder(res, _Chern_tol=0.1):
@@ -156,11 +156,11 @@ def Calc_Man(ham, bands=None, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, Ca
 
 
 if __name__ == "__main__":
-    N, J = 40, 0.00
+    N, J = 21, 0.00
     S_ = np.zeros([N, 3])
-    S_[0, 0], S_[-1, 0] = 1, -1
-    S_[1, 0], S_[-2, 0] = 1, -1
-    S_[2, 0], S_[-3, 0] = 1, -1
+    # S_[0, 0], S_[-1, 0] = 1, 1
+    # S_[1, 0], S_[-2, 0] = 1, 1
+    # S_[2, 0], S_[-3, 0] = 1, 1
 
     # for i in range(N):
     #     S_[i, 0] = 1
