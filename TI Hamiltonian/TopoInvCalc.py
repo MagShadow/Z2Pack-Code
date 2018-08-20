@@ -27,6 +27,7 @@ settings = {'num_lines': 31,
             'min_neighbour_dist': 1e-6,
             }
 
+
 def TopoOrder(res, _Chern_tol=0.1):
     '''
     Accept an Result from TopoInvCalc,
@@ -38,6 +39,7 @@ def TopoOrder(res, _Chern_tol=0.1):
     '''
     C, Z = 1 if abs(res.Chern) > _Chern_tol else 0, int(res.Z2)
     return C*2+Z
+
 
 def Calc(ham, bands=None, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, CalcZ2=True, LogOut=True, Timer=True, settings=settings):
     if not LogOut:
@@ -156,16 +158,17 @@ def Calc_Man(ham, bands=None, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, Ca
 
 
 if __name__ == "__main__":
-    N, J = 21, 0.00
+    N, J = 12, 0.02
     S_ = np.zeros([N, 3])
     # S_[0, 0], S_[-1, 0] = 1, 1
     # S_[1, 0], S_[-2, 0] = 1, 1
     # S_[2, 0], S_[-3, 0] = 1, 1
-
-    # for i in range(N):
-    #     S_[i, 0] = 1
-    #     S_[i, 1] = 0
-    #     S_[i, 2] = 0
+    layer = int(N/2)
+    _S = np.zeros([N, 3])
+    for i in range(layer):
+        _S[i, 0], _S[N-i-1, 0] = 1, 1
+        _S[i, 1], _S[N-i-1, 1] = 0.47124, 0.47124
+        _S[N-i-1, 2] = np.pi
     S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
                     * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
     print(S)

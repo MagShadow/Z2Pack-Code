@@ -17,7 +17,7 @@ from json import dumps, loads
 from itertools import product
 from datetime import datetime
 from functools import partial
-from multiprocessing import Lock, Pool, Queue, Manager
+from multiprocessing import Pool, Queue, Manager
 # 使用Manager().list在多进程通信
 # 在Python3.5下表现有问题：不报错，但是无法写入
 from TI_Film import Hamiltonian, Eig
@@ -68,10 +68,14 @@ def Run_1(_T, _J, i, j, Phase, n=None):
     print(S)
 
     h = Hamiltonian(N=N, J=_J, S=S)
-    res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
-    Phase[i][j] = TIC.TopoOrder(res)
-    print("End Calculation: N=%d , J=%.3f, Result: C=%.4f , Z2=%s" %
-          (N, _J, res.Chern, str(res._Z2)))
+    # res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
+    # Phase[i][j] = TIC.TopoOrder(res)
+    Phase[i][j] = 0
+    if Phase[i][j] != 0:
+        print("=========================================\nNon Trivial Phase!")
+        print("=========================================")
+    # print("End Calculation: Theta=%.3f pi , J=%.3f, Result: C=%.4f , Z2=%s" %
+    #   (_T/np.pi, _J, res.Chern, str(res._Z2)))
     return
 
 
@@ -79,8 +83,8 @@ def PhaseDiag(func, title="Phase Diagram of Theta & J"):
     T_start = datetime.now()
     print("Start Calculation at ", str(T_start))
 
-    J_min, J_max, N_J = 0.00, 0.04, 11
-    Theta_min, Theta_max, N_Theta = 0, np.pi, 11
+    J_min, J_max, N_J = 0.00, 0.04, 21
+    Theta_min, Theta_max, N_Theta = 0, np.pi, 21
     J = np.linspace(J_min, J_max, N_J, endpoint=True)
     T = np.linspace(Theta_min, Theta_max, N_Theta, endpoint=True)
 
@@ -110,4 +114,4 @@ def PhaseDiag(func, title="Phase Diagram of Theta & J"):
 
 
 if __name__ == "__main__":
-    PhaseDiag(Run_1,title="PhaseDiag: Mirror Symmetry")
+    PhaseDiag(Run_1, title="PhaseDiag: Mirror Symmetry")
