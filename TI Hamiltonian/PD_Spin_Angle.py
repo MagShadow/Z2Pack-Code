@@ -17,7 +17,7 @@ from json import dumps, loads
 from itertools import product
 from datetime import datetime
 from functools import partial
-from multiprocessing import Lock, Pool, Queue, Manager
+from multiprocessing import Pool, Queue, Manager
 # 使用Manager().list在多进程通信
 # 在Python3.5下表现有问题：不报错，但是无法写入
 from TI_Film import Hamiltonian, Eig
@@ -65,16 +65,17 @@ def Run_1(_T, _J, i, j, Phase, n=None):
         _S[N-i-1, 2] = np.pi
     S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0] *
                     np.sin(s[1]) * np.sin(s[2]), s[0]*np.cos(s[1])])for s in _S])
-    # print(S)
+    print(S)
 
     h = Hamiltonian(N=N, J=_J, S=S)
-    res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
-    Phase[i][j] = TIC.TopoOrder(res)
+    # res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
+    # Phase[i][j] = TIC.TopoOrder(res)
+    Phase[i][j] = 0
     if Phase[i][j] != 0:
         print("=========================================\nNon Trivial Phase!")
         print("=========================================")
-    print("End Calculation: Theta=%.3f pi , J=%.3f, Result: C=%.4f , Z2=%s" %
-          (_T/np.pi, _J, res.Chern, str(res._Z2)))
+    # print("End Calculation: Theta=%.3f pi , J=%.3f, Result: C=%.4f , Z2=%s" %
+    #   (_T/np.pi, _J, res.Chern, str(res._Z2)))
     return
 
 
