@@ -50,9 +50,6 @@ def CalcGap():
     return
 
 
-
-
-
 def Draw(N, J, P, title="Phase Diagram of N & J", filename=""):
     fig, ax = plt.subplots()
     cmap = mpl.colors.ListedColormap(["r", "g", "b", "c"])
@@ -69,18 +66,18 @@ def Draw(N, J, P, title="Phase Diagram of N & J", filename=""):
         plt.show()
 
 
-def Run_0(_N, _J, i, j, Phase):
+def Run_0(_N, _J, _i, _j, Phase):
     '''
     This func calculate the system with uniform spin distribution in Z-direction.
     '''
     h = Hamiltonian(N=_N, J=_J)
     res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
     print(res.Chern)
-    Phase[i][j] = TIC.TopoOrder(res)
+    Phase[_i][_j] = TIC.TopoOrder(res)
     return
 
 
-def Run_1(_N, _J, i, j, Phase):
+def Run_1(_N, _J, _i, _j, Phase):
     '''
     This func calculate the system with spin distribution: +z in the upper half and -z in the lower half.
     If the # of layers is odd, then the layer in the very middle will have no spin to make sure the total spin in Z direction of this system to be ZERO.
@@ -93,13 +90,15 @@ def Run_1(_N, _J, i, j, Phase):
                     np.sin(s[1]) * np.sin(s[2]), s[0]*np.cos(s[1])])for s in _S])
     h = Hamiltonian(N=_N, J=_J, S=S)
     res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
-    Phase[i][j] = TIC.TopoOrder(res)
+    Phase[_i][_j] = TIC.TopoOrder(res)
     print("End Calculation: N=%d , J=%.3f, Result: C=%.4f , Z2=%s" %
           (_N, _J, res.Chern, str(res._Z2)))
+    # Phase[_i][_j] = _i*10+_j
+
     return
 
 
-def Run_2(_N, _J, i, j, Phase):
+def Run_2(_N, _J, _i, _j, Phase):
     '''
     This func calculate the system with spin distribution: +x in the upper half and -x in the lower half.
     If the # of layers is odd, then the layer in the very middle will have no spin to make sure the total spin in Z direction of this system to be ZERO.
@@ -115,13 +114,13 @@ def Run_2(_N, _J, i, j, Phase):
     # print(S)
     h = Hamiltonian(N=_N, J=_J, S=S)
     res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
-    Phase[i][j] = TIC.TopoOrder(res)
+    Phase[_i][_j] = TIC.TopoOrder(res)
     print("End Calculation: N=%d , J=%.3f, Result: C=%.4f , Z2=%s" %
           (_N, _J, res.Chern, str(res._Z2)))
     return
 
 
-def Run_3(_N, _J, i, j, Phase, n=1):
+def Run_3(_N, _J, _i, _j, Phase, n=1):
     r'''
     This func calculate the system with spin distribution: +z in the first $n$ layer and -z in the last $n$ layer.
 
@@ -136,13 +135,13 @@ def Run_3(_N, _J, i, j, Phase, n=1):
     # print(S)
     h = Hamiltonian(N=_N, J=_J, S=S)
     res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
-    Phase[i][j] = TIC.TopoOrder(res)
+    Phase[_i][_j] = TIC.TopoOrder(res)
     print("End Calculation: N=%d , J=%.3f, Result: C=%.4f , Z2=%s" %
           (_N, _J, res.Chern, str(res._Z2)))
     return
 
 
-def Run_4(_N, _J, i, j, Phase, n=1):
+def Run_4(_N, _J, _i, _j, Phase, n=1):
     r'''
     This func calculate the system with spin distribution: +z in the first $n$ layer and the last $n$ layer.
 
@@ -157,7 +156,7 @@ def Run_4(_N, _J, i, j, Phase, n=1):
     # print(S)
     h = Hamiltonian(N=_N, J=_J, S=S)
     res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
-    Phase[i][j] = TIC.TopoOrder(res)
+    Phase[_i][_j] = TIC.TopoOrder(res)
     print("End Calculation: N=%d , J=%.3f, Result: C=%.4f , Z2=%s" %
           (_N, _J, res.Chern, str(res._Z2)))
     return
@@ -166,7 +165,7 @@ def Run_4(_N, _J, i, j, Phase, n=1):
 def PhaseDiag(func, title="Phase Diagram of N & J"):
     T_start = datetime.now()
     print("Start Calculation at ", str(T_start))
-    N_min, N_max, J_min, J_max, NJ = 6, 20, 0.00, 0.03, 20
+    N_min, N_max, J_min, J_max, NJ = 6, 20, 0.00, 0.04, 20
     # N_min, N_max, J_min, J_max, NJ = 19, 21, 0.00, 0.02, 3
     N = np.array(list(range(N_min, N_max+1)), dtype=int)
     J = np.linspace(J_min, J_max, num=NJ, endpoint=True)
@@ -198,4 +197,4 @@ def PhaseDiag(func, title="Phase Diagram of N & J"):
 
 if __name__ == "__main__":
     # CalcGap()
-    PhaseDiag(Run_2, title="Phase Diagram of N & J (Spin x&-x)")
+    PhaseDiag(Run_1, title="Phase Diagram of N & J (Spin z&-z)")
