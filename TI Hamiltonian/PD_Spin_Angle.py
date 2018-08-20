@@ -7,6 +7,7 @@
 
 import numpy as np
 import os
+import sys
 import random
 from scipy import linalg
 import matplotlib as mpl
@@ -25,16 +26,23 @@ from PD_N_J import nt
 import TopoInvCalc as TIC
 
 settings = {'num_lines': 51,
-            'pos_tol':  1e-2,
-            'gap_tol': 0.05,
-            'move_tol': 0.2,
-            'iterator': range(50, 81, 4),
-            'min_neighbour_dist': 1e-4,
+            'pos_tol':  1e-3,
+            'gap_tol': 0.01,
+            'move_tol': 0.3,
+            'iterator': range(50, 121, 4),
+            'min_neighbour_dist': 1e-5,
             }
+settings_strict = {'num_lines': 51,
+                   'pos_tol':  1e-3,
+                   'gap_tol': 0.01,
+                   'move_tol': 0.3,
+                   'iterator': range(50, 121, 5),
+                   'min_neighbour_dist': 1e-5,
+                   }
 N = 12
 
 
-def Draw(T, J, P, title="Phase Diagram of N & J", filename=""):
+def Draw(T, J, P, title="Phase Diagram of Angle & J", filename=""):
     fig, ax = plt.subplots()
     cmap = mpl.colors.ListedColormap(["r", "g", "b", "c"])
     norm = mpl.colors.BoundaryNorm(list(range(5)), cmap.N)
@@ -51,7 +59,7 @@ def Draw(T, J, P, title="Phase Diagram of N & J", filename=""):
         plt.show()
 
 
-def Run_1(_T, _J, i, j, Phase, n=None):
+def Run_1(_T, _J, _i, _j, Phase, n=None):
     '''
     This func calculate the system with Mirror Symmetry,   which means that for the upper half and the lower half,the parallel components changes sign while 
     :para `n` defines how many layers (in upper half) contains the Spin term. In default, all of the upper half have the spin term.
@@ -65,17 +73,20 @@ def Run_1(_T, _J, i, j, Phase, n=None):
         _S[N-i-1, 2] = np.pi
     S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0] *
                     np.sin(s[1]) * np.sin(s[2]), s[0]*np.cos(s[1])])for s in _S])
-    print(S)
+    # print(S)
 
     h = Hamiltonian(N=N, J=_J, S=S)
-    # res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
-    # Phase[i][j] = TIC.TopoOrder(res)
-    Phase[i][j] = 0
-    if Phase[i][j] != 0:
+    res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
+    Phase[_i][_j] = TIC.TopoOrder(res)
+    # Phase[_i][_j] = _i*10+_j
+    # print("(", _i, ",", _j, "),", end="")
+    if Phase[_i][_j] != 0:
         print("=========================================\nNon Trivial Phase!")
         print("=========================================")
-    # print("End Calculation: Theta=%.3f pi , J=%.3f, Result: C=%.4f , Z2=%s" %
-    #   (_T/np.pi, _J, res.Chern, str(res._Z2)))
+        # sys.stderr.write("Theta=%.3f pi , J=%.3f, Result: C=%.4f , Z2=%s" %
+        #                  (_T/np.pi, _J, res.Chern, str(res._Z2)))
+    print("End Calculation: Theta=%.3f pi , J=%.3f, Result: C=%.4f , Z2=%s" %
+          (_T/np.pi, _J, res.Chern, str(res._Z2)))
     return
 
 
@@ -83,14 +94,15 @@ def PhaseDiag(func, title="Phase Diagram of Theta & J"):
     T_start = datetime.now()
     print("Start Calculation at ", str(T_start))
 
-    J_min, J_max, N_J = 0.00, 0.04, 21
-    Theta_min, Theta_max, N_Theta = 0, np.pi, 21
+    J_min, J_max, N_J = 0.00, 0.02, 11
+    Theta_min, Theta_max, N_Theta = 0, np.pi/2, 11
     J = np.linspace(J_min, J_max, N_J, endpoint=True)
     T = np.linspace(Theta_min, Theta_max, N_Theta, endpoint=True)
 
     # Run Calculation in Multi Process
     p, m = Pool(), Manager()
-    Phase = m.list([m.list([0]*N_J) for i in range(N_Theta)])
+    p = m.Pool()
+    Phase = m.list([m.list([0 for j in range(N_J)]) for i in range(N_Theta)])
 
     for i, j in product(list(range(N_Theta)), list(range(N_J))):
         T_, J_ = T[i], J[j]
