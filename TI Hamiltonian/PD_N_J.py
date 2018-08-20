@@ -166,7 +166,7 @@ def Run_4(_N, _J, i, j, Phase, n=1):
 def PhaseDiag(func, title="Phase Diagram of N & J"):
     T_start = datetime.now()
     print("Start Calculation at ", str(T_start))
-    N_min, N_max, J_min, J_max, NJ = 6, 15, 0.00, 0.02, 12
+    N_min, N_max, J_min, J_max, NJ = 6, 20, 0.00, 0.03, 20
     # N_min, N_max, J_min, J_max, NJ = 19, 21, 0.00, 0.02, 3
     N = np.array(list(range(N_min, N_max+1)), dtype=int)
     J = np.linspace(J_min, J_max, num=NJ, endpoint=True)
@@ -198,4 +198,4 @@ def PhaseDiag(func, title="Phase Diagram of N & J"):
 
 if __name__ == "__main__":
     # CalcGap()
-    PhaseDiag(Run_4, title="Phase Diagram of N & J (Spin z in top and bottom layer)")
+    PhaseDiag(Run_2, title="Phase Diagram of N & J (Spin x&-x)")
