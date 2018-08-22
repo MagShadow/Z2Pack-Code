@@ -61,7 +61,7 @@ def Draw(T, J, P, title="Phase Diagram of Angle & J", filename=""):
 
 def Run_1(_T, _J, _i, _j, Phase, n=None):
     '''
-    This func calculate the system with Mirror Symmetry,   which means that for the upper half and the lower half,the parallel components changes sign while 
+    This func calculate the system with Mirror Symmetry,   which means that for the upper half and the lower half,the parallel components changes sign while the perpendicular term keep unchanged
     :para `n` defines how many layers (in upper half) contains the Spin term. In default, all of the upper half have the spin term.
     '''
     print("Start Calculation: Theta=%.3f , J=%.3f" % (_T, _J))
@@ -90,17 +90,49 @@ def Run_1(_T, _J, _i, _j, Phase, n=None):
     return
 
 
+def Run_2(_T, _J, _i, _j, Phase, n=None):
+    '''
+    This func calculate the system with Inversion Symmetry, which means that for the upper half and the lower half, the spin terms change signs.
+
+    :para `n` defines how many layers (in upper half) contains the Spin term. In default, all of the upper half have the spin term.
+    '''
+    print("Start Calculation: Theta=%.3f , J=%.3f" % (_T, _J))
+    _S = np.zeros([N, 3])
+    layer = int(N/2) if n == None else min(int(n), int(N/2))
+    for i in range(layer):
+        _S[i, 0], _S[N-i-1, 0] = 1, -1
+        _S[i, 1], _S[N-i-1, 1] = _T, _T
+        # _S[N-i-1, 2] = np.pi
+    S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0] *
+                    np.sin(s[1]) * np.sin(s[2]), s[0]*np.cos(s[1])])for s in _S])
+    # print(S)
+
+    h = Hamiltonian(N=N, J=_J, S=S)
+    res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
+    Phase[_i][_j] = TIC.TopoOrder(res)
+    # Phase[_i][_j] = _i*10+_j
+    # print("(", _i, ",", _j, "),", end="")
+    if Phase[_i][_j] != 0:
+        print("=========================================\nNon Trivial Phase!")
+        print("=========================================")
+        # sys.stderr.write("Theta=%.3f pi , J=%.3f, Result: C=%.4f , Z2=%s" %
+        #                  (_T/np.pi, _J, res.Chern, str(res._Z2)))
+    print("End Calculation: Theta=%.3f pi , J=%.3f, Result: C=%.4f , Z2=%s" %
+          (_T/np.pi, _J, res.Chern, str(res._Z2)))
+    return
+
+
 def PhaseDiag(func, title="Phase Diagram of Theta & J"):
     T_start = datetime.now()
     print("Start Calculation at ", str(T_start))
 
-    J_min, J_max, N_J = 0.00, 0.02, 11
-    Theta_min, Theta_max, N_Theta = 0, np.pi/2, 11
+    J_min, J_max, N_J = 0.00, 0.03, 31
+    Theta_min, Theta_max, N_Theta = 0, np.pi, 31
     J = np.linspace(J_min, J_max, N_J, endpoint=True)
     T = np.linspace(Theta_min, Theta_max, N_Theta, endpoint=True)
 
     # Run Calculation in Multi Process
-    p, m = Pool(), Manager()
+    m = Manager()
     p = m.Pool()
     Phase = m.list([m.list([0 for j in range(N_J)]) for i in range(N_Theta)])
 
@@ -126,4 +158,4 @@ def PhaseDiag(func, title="Phase Diagram of Theta & J"):
 
 
 if __name__ == "__main__":
-    PhaseDiag(Run_1, title="PhaseDiag: Mirror Symmetry")
+    PhaseDiag(Run_2, title="PhaseDiag: Inversion Symmetry, N=12")
