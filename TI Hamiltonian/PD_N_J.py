@@ -197,4 +197,4 @@ def PhaseDiag(func, title="Phase Diagram of N & J"):
 
 if __name__ == "__main__":
     # CalcGap()
-    PhaseDiag(Run_1, title="Phase Diagram of N & J (Spin z&-z)")
+    PhaseDiag(Run_4, title="Phase Diagram of N & J\n(Spin z in top and bottom layer)")
