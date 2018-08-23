@@ -19,12 +19,12 @@ pauli_y = np.array([[0, -1j], [1j, 0]], dtype=complex)
 pauli_z = np.array([[1, 0], [0, -1]], dtype=complex)
 pauli_vector = list([pauli_x, pauli_y, pauli_z])
 
-settings = {'num_lines': 31,
-            'pos_tol':  1e-5,
-            'gap_tol': 0.0001,
+settings = {'num_lines': 51,
+            'pos_tol':  1e-4,
+            'gap_tol': 0.001,
             'move_tol': 0.5,
-            'iterator': range(30, 401, 5),
-            'min_neighbour_dist': 1e-6,
+            'iterator': range(50, 101, 5),
+            'min_neighbour_dist': 5e-6,
             }
 
 
@@ -158,7 +158,7 @@ def Calc_Man(ham, bands=None, surf=lambda k1, k2: [k1-0.5, k2-0.5], KScale=1, Ca
 
 
 if __name__ == "__main__":
-    N, J = 12, 0.02
+    N, J = 20, 0.00
     S_ = np.zeros([N, 3])
     # S_[0, 0], S_[-1, 0] = 1, 1
     # S_[1, 0], S_[-2, 0] = 1, 1
@@ -172,14 +172,14 @@ if __name__ == "__main__":
     S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
                     * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
     print(S)
-    h = Hamiltonian(N=N, J=J, S=S)
+    h = Hamiltonian(N=N, J=J)
 
-    # from TI_Film import plotLine
-    # plotLine(h, 2*N-2, 2*N+2)
+    from TI_Film import plotLine
+    plotLine(h, 2*N-2, 2*N+2)
     # e = Eig(h)
     # plotBS(e, 2*N-2, 2*N+2, title="TI Film: z&-z in 3 layers, J=0.01, 4 bands")
     # h = Ham_Small(0.02, 0.02)
     # bands=[2*N-2, 2*N],
-    res = Calc(h,  KScale=5, CalcZ2=False, LogOut=True)
-    # print("Chern=", res.Chern)
-    res.plotChern()
+    # res = Calc(h,  KScale=1, CalcZ2=False, LogOut=True)
+    # # print("Chern=", res.Chern)
+    # res.plotChern()
