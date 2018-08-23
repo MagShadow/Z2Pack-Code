@@ -162,6 +162,28 @@ def Run_4(_N, _J, _i, _j, Phase, n=1):
     return
 
 
+def Run_5(_N, _J, _i, _j, Phase):
+    '''
+    This func calculate the system with uniform spin distribution in Z-direction.
+    '''
+    print("Start Calculation: N=%d , J=%.3f" % (_N, _J))
+    _S = np.zeros([_N, 3])
+    for i in range(_N):
+        _S[i, 0] = 1
+        _S[i, 1] = np.pi/2
+    S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0] *
+                    np.sin(s[1]) * np.sin(s[2]), s[0]*np.cos(s[1])])for s in _S])
+    # print(S)
+    h = Hamiltonian(N=_N, J=_J, S=S)
+    res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
+    Phase[_i][_j] = TIC.TopoOrder(res)
+    print("End Calculation: N=%d , J=%.3f, Result: C=%.4f , Z2=%s" %
+          (_N, _J, res.Chern, str(res._Z2)))
+    # Phase[_i][_j] = _i*10+_j
+
+    return
+
+
 def PhaseDiag(func, title="Phase Diagram of N & J"):
     T_start = datetime.now()
     print("Start Calculation at ", str(T_start))
@@ -197,4 +219,4 @@ def PhaseDiag(func, title="Phase Diagram of N & J"):
 
 if __name__ == "__main__":
     # CalcGap()
-    PhaseDiag(Run_1, title="Phase Diagram of N & J (Spin z&-z)")
+    PhaseDiag(Run_5, title="Phase Diagram of N & J (Spin x)")
