@@ -122,6 +122,38 @@ def Run_2(_T, _J, _i, _j, Phase, n=None):
     return
 
 
+def Run_3(_T, _J, _i, _j, Phase, n=None):
+    '''
+    This func calculate the system with Mirror + Inversion Symmetry, which means that for the upper half and the lower half,the perpendicular components changes sign while the parallel term keep unchanged.
+
+    :para `n` defines how many layers (in upper half) contains the Spin term. In default, all of the upper half have the spin term.
+    '''
+    print("Start Calculation: Theta=%.3f , J=%.3f" % (_T, _J))
+    _S = np.zeros([N, 3])
+    layer = int(N/2) if n == None else min(int(n), int(N/2))
+    for i in range(layer):
+        _S[i, 0], _S[N-i-1, 0] = 1, 1
+        _S[i, 1], _S[N-i-1, 1] = _T, np.pi-_T
+        # _S[N-i-1, 2] = np.pi
+    S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0] *
+                    np.sin(s[1]) * np.sin(s[2]), s[0]*np.cos(s[1])])for s in _S])
+    # print(S)
+
+    h = Hamiltonian(N=N, J=_J, S=S)
+    res = TIC.Calc(h, CalcZ2=True, LogOut=False, settings=settings)
+    Phase[_i][_j] = TIC.TopoOrder(res)
+    # Phase[_i][_j] = _i*10+_j
+    # print("(", _i, ",", _j, "),", end="")
+    if Phase[_i][_j] != 0:
+        print("=========================================\nNon Trivial Phase!")
+        print("=========================================")
+        # sys.stderr.write("Theta=%.3f pi , J=%.3f, Result: C=%.4f , Z2=%s" %
+        #                  (_T/np.pi, _J, res.Chern, str(res._Z2)))
+    print("End Calculation: Theta=%.3f pi , J=%.3f, Result: C=%.4f , Z2=%s" %
+          (_T/np.pi, _J, res.Chern, str(res._Z2)))
+    return
+
+
 def PhaseDiag(func, title="Phase Diagram of Theta & J"):
     T_start = datetime.now()
     print("Start Calculation at ", str(T_start))
@@ -158,4 +190,4 @@ def PhaseDiag(func, title="Phase Diagram of Theta & J"):
 
 
 if __name__ == "__main__":
-    PhaseDiag(Run_2, title="PhaseDiag: Inversion Symmetry, N=12")
+    PhaseDiag(Run_3, title="PhaseDiag: Mirror+Inversion Symmetry, N=12")
