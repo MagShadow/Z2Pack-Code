@@ -62,3 +62,16 @@ t_{2,1} & h_{2,2} & t_{2,3} & 0 \\
 0 & 0 & \ddots & h_{N,N}
 \end{pmatrix}
 $$
+
++ Some Constants we use:
+
+|                           | PRB 82,045122(2010) |Haizhou Lu|
+|---------------------------|:---------------------:|:--:|
+| $A_1(\rm eV \cdot\mathring A)$   | 2.26                |3.3|
+| $A_2(\rm eV \cdot\mathring A)$   | 3.33                |4.1|
+| $C(\rm eV)$               | -0.0083             |-0.0068|
+| $D_1(\rm eV \cdot\mathring A^2)$ | 5.74                |1.2|
+| $D_2(\rm eV \cdot\mathring A^2)$ | 30.4                |-30.1|
+| $M(\rm eV)$               | 0.28                |0.28|
+| $B_1(\rm eV \cdot\mathring A^2)$ | 6.86                |1.5|
+| $B_2(\rm eV \cdot\mathring A^2)$ | 44.5                |-54.1|

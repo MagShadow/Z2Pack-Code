@@ -10,55 +10,29 @@ from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
-
-# Constants related to real material
-# unit of length: angstrom
-# unit of energy: eV
-A1, A2, C, D1, D2 = 2.26, 3.33, -0.0083, 5.74, 30.4
-M, B1, B2 = 0.28, 6.86, 44.5
-Delta = 3
-N_ = 20  # total layers in z direction, N=20->d=0.6nm
-J_ = 0.02  # spin coupling energy
-
-# Prerequisite matrices
-Gzz = np.array(np.diag([D1-B1, D1+B1, D1-B1, D1+B1]), dtype=complex)
-Gz = np.zeros([4, 4], dtype=complex)
-Gz[0, 1] = Gz[1, 0] = 1.0j*A1
-Gz[3, 2] = Gz[2, 3] = -1.0j*A1
-t_p = -1*Gzz/(Delta*Delta)-Gz/(2*Delta)
-t_m = -1*Gzz/(Delta*Delta)+Gz/(2*Delta)
-
-# sig_xyz = pauli_xyz tensor identity
-sig_x, sig_y, sig_z = [np.zeros([4, 4], dtype=complex) for i in range(3)]
-sig_x[0, 2], sig_x[1, 3], sig_x[2, 0], sig_x[3, 1] = 1, 1, 1, 1
-sig_y[0, 2], sig_y[1, 3], sig_y[2, 0], sig_y[3, 1] = -1j, -1j, 1j, 1j
-sig_z[0, 0], sig_z[1, 1], sig_z[2, 2], sig_z[3, 3] = 1, 1, -1, -1
-sig = np.array([sig_x, sig_y, sig_z])
+from _utils import sig, convertSpin
 
 
-# vS[i] discribe the spin distribution
-# first component is the intensity, from 0 to 1
-# second and three term is the theta and phi, describe the direction of the spin
-# S_[i] is the spin vector
 def SpinZ(M):
-    # M = int(M)
+    r'''
+    Return an array of Spin in Z direction, with a form of $(Sx,Sy,Sz)$
+    '''
+    # vS[i] discribe the spin distribution
+    # first component is the intensity, from 0 to 1
+    # second and three term is the theta and phi, describe the direction of the spin
+    # S_[i] is the spin vector
     vS = np.array([[1, 0, 0]]*M)
     S_ = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
                      * np.sin(s[2]), s[0]*np.cos(s[1])])for s in vS])
     return S_
 
 
-S_ = SpinZ(N_)
-U_ = np.zeros([N_])
-
-xRange, yRange, Nx, Ny = 0.05, 0.05, 50, 50
-X_ = np.linspace(-xRange, xRange, Nx+1, endpoint=True)
-Y_ = np.linspace(-yRange, yRange, Ny+1, endpoint=True)
-
-# Return a 4N*4N matrix
-
-
-def Hamiltonian(N=N_, J=J_, S=[], U=[]):
+def Hamiltonian(N=20, J=0, S=[], U=[], Delta=3,
+                *, A1=2.26, A2=3.33, C=-0.0083, D1=5.74, D2=30.4,
+                M=0.28, B1=6.86, B2=44.5):
+    '''
+    Default constants from PHYSICAL REVIEW B 82, 045122 (2010)
+    '''
     assert isinstance(N, Integral), "N should be an interger!"
     assert (J > 0) or (abs(J) < 1e-9), "J should >0!"
     if S == []:
@@ -67,6 +41,14 @@ def Hamiltonian(N=N_, J=J_, S=[], U=[]):
         U = np.zeros([N])
     assert len(S) == N, "Length of S distribution should equal to N"
     assert len(U) == N, "Length of U distribution should equal to N"
+
+    # Prerequisite matrices
+    Gzz = np.array(np.diag([D1-B1, D1+B1, D1-B1, D1+B1]), dtype=complex)
+    Gz = np.zeros([4, 4], dtype=complex)
+    Gz[0, 1] = Gz[1, 0] = 1.0j*A1
+    Gz[3, 2] = Gz[2, 3] = -1.0j*A1
+    t_p = -1*Gzz/(Delta*Delta)-Gz/(2*Delta)
+    t_m = -1*Gzz/(Delta*Delta)+Gz/(2*Delta)
 
     def _ham(kx, ky):
         def E_(kx, ky):
@@ -91,6 +73,11 @@ def Hamiltonian(N=N_, J=J_, S=[], U=[]):
     return _ham
 
 
+xRange, yRange, Nx, Ny = 0.05, 0.05, 50, 50
+X_ = np.linspace(-xRange, xRange, Nx+1, endpoint=True)
+Y_ = np.linspace(-yRange, yRange, Ny+1, endpoint=True)
+
+
 def Eig(h, xRange=xRange, yRange=yRange, Nx=Nx, Ny=Ny):
     '''
         Accept callable object h(kx,ky);
@@ -99,11 +86,10 @@ def Eig(h, xRange=xRange, yRange=yRange, Nx=Nx, Ny=Ny):
     assert isinstance(Nx, Integral), "Nx should be an interger!"
     assert isinstance(Ny, Integral), "Ny should be an interger!"
 
-    N1, N2 = h(0, 0).shape
+    N1 = h(0, 0).shape[0]
     N = int(N1/4)
     dkx, dky = 2*xRange/Nx, 2*yRange/Ny
     bs = np.zeros([Nx+1, Ny+1, 4*N], dtype=float)
-    # bs = [[0]*(Ny+1)]*(Nx+1)
     for i in range(Nx+1):
         for j in range(Ny+1):
             kx, ky = -xRange+dkx*i, -yRange+dky*j
@@ -111,16 +97,9 @@ def Eig(h, xRange=xRange, yRange=yRange, Nx=Nx, Ny=Ny):
             temp.sort()
             bs[i, j] = temp
 
-    class EigenSys(np.ndarray):
-        def __init__(self, *args, **kw):
-            super(*args, **kw)
-    print(N)
     temp = [([([bs[i, j, n] for j in range(Ny+1)]) for i in range(Nx+1)])
             for n in range(4*N)]
-    # _Eig = EilgenSys(temp)
     return np.array(temp)
-    # return(np.array([([([bs[i, j, n] for j in range(Ny+1)]) for i in range(Nx+1)])
-    #                  for n in range(4*N)]))
 
 
 def Gap(E, k=None):
@@ -142,7 +121,6 @@ def plotBS(E, start, end, X=X_, Y=Y_, filename="", title=""):
         ax.plot_surface(x, y, Z, cmap=cm.coolwarm,
                         linewidth=0, antialiased=False)
 
-    # fig.colorbar(surf, shrink=0.5, aspect=5)
     ax.zaxis.set_major_locator(LinearLocator(10))
     ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
 
@@ -166,7 +144,6 @@ def plotLine(h, start, end, xRange=0.05, Nx=20, axis="x", filename="", title="")
         X = np.array([[-xRange+step*i, 0]for i in range(Nx+1)])
     else:
         X = np.array([[0, -xRange+step*i]for i in range(Nx+1)])
-    # print(X)
     N_band = h(0, 0).shape[0]
     E = np.zeros([Nx+1, N_band], dtype=float)
     for i in range(Nx+1):
@@ -186,28 +163,17 @@ def plotLine(h, start, end, xRange=0.05, Nx=20, axis="x", filename="", title="")
 
 
 if __name__ == "__main__":
-    N, J = 12, 0.01
-    # _S = np.zeros([N, 3])
-    # for i in range(int(N/2)):
-    #     _S[i, 0], _S[N-i-1, 0] = 1, -1
-    # S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0] *
-    #                 np.sin(s[1]) * np.sin(s[2]), s[0]*np.cos(s[1])])for s in _S])
+    N, Delta, J = 18, 3.33, 0.00
 
-    # print(S)
-    S_ = np.zeros([N, 3])
-    S_[0, 0], S_[-1, 0] = 1, 1
-    # for i in range(N):
-    #     S_[i, 0] = 1
-    #     S_[i, 1] = 0
-    #     S_[i, 2] = 0
-    S = np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
-                    * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S_])
+    # _S = np.zeros([N, 3])
+    # S = convertSpin(_S)
 
     xRange, yRange, Nx, Ny = 0.05, 0.05, 30, 30
     X_ = np.linspace(-xRange, xRange, Nx+1, endpoint=True)
     Y_ = np.linspace(-yRange, yRange, Ny+1, endpoint=True)
-    h = Hamiltonian(N=N, J=J)
+
+    h = Hamiltonian(N=N, J=J, Delta=Delta)
     plotLine(h, 2*N-2, 2*N+2, xRange=xRange, Nx=Nx)
     # e = Eig(h, xRange=xRange, yRange=yRange, Nx=Nx, Ny=Ny)
     # plotBS(e, 2*N-2, 2*N+2, X=X_, Y=Y_,
-    #        title="TI Film, Spin: +z & -z, J=0.02, 4 bands")
+    #        title="TI Film, Spin: +z, J=0.02, 4 bands")

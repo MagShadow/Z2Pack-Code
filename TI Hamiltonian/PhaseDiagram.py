@@ -16,6 +16,12 @@ from _utils import nt, settings, settings_strict
 
 
 class PhaseDiag(object):
+    r'''
+    Phase Diagram for different parameters.
+
+    Func `run` accept a function, two axes to draw the phase diagram.
+    '''
+
     def __init__(self, PD=None):
         if PD == None:
             return
