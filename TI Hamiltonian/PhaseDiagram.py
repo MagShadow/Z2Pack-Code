@@ -57,6 +57,8 @@ class PhaseDiag(object):
         print("End Calculation at ", str(self.T_end))
         print("Total time:", str(self.T_end-self.T_start))
 
+        return self
+
     def read(self, filename=""):
         assert filename != "", "filename cannot be empty!"
         with open(filename, "r") as f:
@@ -68,7 +70,9 @@ class PhaseDiag(object):
     def write(self, filename="", mode="w"):
         assert mode in ["w", "a"], "Writing Mode can only be 'w' or 'a'!"
         if filename == "":
-            filename = "PhaseDiag_Data_"+nt()
+            filename = "PhaseDiag_Data_"+nt()+".txt"
+        elif ((len(filename) <= 4) or (filename[-4:] != ".txt")):
+            filename = filename+".txt"
         d = deepcopy(self.info)
         d["data"] = self.data
         with open(filename, mode) as f:
