@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "Compare_Paras.py", line 41, in <module>
+    xlabel="# of Layers", ylabel=r"J(\rm eV)", filename=File_0)
+  File "/home/jixiangyang/Code/Z2Pack-Code/TI Hamiltonian/PhaseDiagram.py", line 92, in draw
+    ax.pcolormesh(X, Y, np.array(Z), cmap=cmap, vmin=0, vmax=3)
+  File "/usr/local/lib/python3.6/dist-packages/matplotlib/__init__.py", line 1855, in inner
+    return func(ax, *args, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/matplotlib/axes/_axes.py", line 5930, in pcolormesh
+    X, Y, C = self._pcolorargs('pcolormesh', *args, allmatch=allmatch)
+  File "/usr/local/lib/python3.6/dist-packages/matplotlib/axes/_axes.py", line 5576, in _pcolorargs
+    C.shape, Nx, Ny, funcname))
+TypeError: Dimensions of C (15, 21) are incompatible with X (16) and/or Y (22); see help(pcolormesh)
