@@ -158,7 +158,13 @@ def plotLine(h, start, end, xRange=0.05, Nx=20, axis="x", filename="", title="")
 
     for b in Z[start:end]:
         plt.plot(x, b)
-    plt.show()
+    plt.xlabel(r"$k_x(\rm \AA^{-1})$")
+    plt.ylabel(r"$E(eV)$")
+    plt.title(title)
+    if filename != "":
+        plt.savefig(filename+".png")
+    else:
+        plt.show()
     # print("End!")
 
 
