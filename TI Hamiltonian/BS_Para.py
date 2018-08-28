@@ -12,4 +12,4 @@ if __name__ == '__main__':
     h = Hamiltonian(N, **CONST_HJZ)
     xRange, yRange, Nx, Ny = 0.05, 0.05, 50, 50
     plotLine(h, 2*N-2, 2*N+2, xRange=xRange, Nx=Nx,
-             title="Band Structure(4 bands), Delta=$3\AA$, No Spin\nParameters from Hai-Jun Zhang's paper.", filename="Test")
+             title="Band Structure(4 bands), Delta=$3\AA$, No Spin\nParameters from Hai-Zhou Lu's paper.", filename="Test")
