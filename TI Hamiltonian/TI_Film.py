@@ -34,7 +34,7 @@ def Hamiltonian(N=20, J=0, S=[], U=[], Delta=3,
     Default constants from PHYSICAL REVIEW B 82, 045122 (2010)
     '''
     assert isinstance(N, Integral), "N should be an interger!"
-    assert (J > 0) or (abs(J) < 1e-9), "J should >0!"
+    assert (J > 0) or (abs(J) < 1e-9), "J should >=0!"
     if S == []:
         S = SpinZ(N)
     if U == []:
@@ -150,9 +150,7 @@ def plotLine(h, start, end, xRange=0.05, Nx=20, axis="x", filename="", title="")
         temp = np.array([x.real for x in (linalg.eig(h(X[i, 0], X[i, 1]))[0])])
         temp.sort()
         E[i] = temp
-    # print(Eig)
     Z = np.array([[E[i, j] for i in range(Nx+1)] for j in range(N_band)])
-    # print(Z)
     plt.subplot(1, 1, 1)
     x = np.linspace(-xRange, xRange, Nx+1, endpoint=True)
 
@@ -165,21 +163,20 @@ def plotLine(h, start, end, xRange=0.05, Nx=20, axis="x", filename="", title="")
         plt.savefig(filename+".png")
     else:
         plt.show()
-    # print("End!")
 
 
-if __name__ == "__main__":
-    N, Delta, J = 18, 3.33, 0.00
+# if __name__ == "__main__":
+#     N, Delta, J = 18, 3.33, 0.00
 
-    # _S = np.zeros([N, 3])
-    # S = convertSpin(_S)
+#     # _S = np.zeros([N, 3])
+#     # S = convertSpin(_S)
 
-    xRange, yRange, Nx, Ny = 0.05, 0.05, 30, 30
-    X_ = np.linspace(-xRange, xRange, Nx+1, endpoint=True)
-    Y_ = np.linspace(-yRange, yRange, Ny+1, endpoint=True)
+#     xRange, yRange, Nx, Ny = 0.05, 0.05, 30, 30
+#     X_ = np.linspace(-xRange, xRange, Nx+1, endpoint=True)
+#     Y_ = np.linspace(-yRange, yRange, Ny+1, endpoint=True)
 
-    h = Hamiltonian(N=N, J=J, Delta=Delta)
-    plotLine(h, 2*N-2, 2*N+2, xRange=xRange, Nx=Nx)
-    # e = Eig(h, xRange=xRange, yRange=yRange, Nx=Nx, Ny=Ny)
-    # plotBS(e, 2*N-2, 2*N+2, X=X_, Y=Y_,
-    #        title="TI Film, Spin: +z, J=0.02, 4 bands")
+#     h = Hamiltonian(N=N, J=J, Delta=Delta)
+#     plotLine(h, 2*N-2, 2*N+2, xRange=xRange, Nx=Nx)
+#     # e = Eig(h, xRange=xRange, yRange=yRange, Nx=Nx, Ny=Ny)
+#     # plotBS(e, 2*N-2, 2*N+2, X=X_, Y=Y_,
+#     #        title="TI Film, Spin: +z, J=0.02, 4 bands")
