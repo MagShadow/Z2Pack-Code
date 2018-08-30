@@ -39,7 +39,6 @@ CONST_HZL = {  # Interesting!!!!!
     "M": 0.28, "B1": 1.5, "B2": -54.1
 }
 
-
 def nt():
     '''
     Format the time.
@@ -53,4 +52,4 @@ def convertSpin(S):
     '''
     return np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
                            * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S])
-                        
+    
