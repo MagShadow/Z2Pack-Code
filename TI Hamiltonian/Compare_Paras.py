@@ -54,7 +54,7 @@ def Run_HZL(_N, _J, _i, _j, Phase):
 if __name__ == '__main__':
     now = nt()
     # File_0 = "PD_Delta_3_"+now
-    File_1 = "PD_HZL_Delta_3_"+now
+    File_1 = "PD_HZL_Origin_"+now
 
     # PD_0 = PhaseDiag().run(Run_0, 6, 20, 15, 0, 0.02, 21, "N", "J")
     # PD_0.write(filename=File_0)

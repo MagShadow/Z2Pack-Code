@@ -33,7 +33,10 @@ CONST_HJZ = {
     "A1": 2.26, "A2": 3.33, "C": -0.0083, "D1": 5.74, "D2": 30.4,
     "M": 0.28, "B1": 6.86, "B2": 44.5
 }
-
+CONST_HZL_O = {  # Interesting!!!!!
+    "A1": 3.3, "A2": 4.1, "C": -0.0068, "D1": 1.2, "D2": -30.1,
+    "M": 0.28, "B1": 1.5, "B2": -54.1
+}
 # Consts from New J. Phys. 12 043048 (2010)
 # B1 and D1 has different signs with their papers, because the M term and E term
 # in different papers have different forms
