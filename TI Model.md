@@ -81,6 +81,8 @@ $$
 
 ## Constants
 
++ Lattice Constant: $a=4.14 {\rm \mathring A}, c=28.7{\rm \mathring A}$, from <www.issp.ac.ru/lpcbc/DANDP/Bi-Ch.html>
+
 |                           | PRB 82,045122(2010) |Haizhou Lu|HJ Zhang 2009 First-Pinciple,Bulk|
 |---------------------------|:---------------------:|:--:|:--:|
 | $A_1(\rm eV \cdot\mathring A)$   | 2.26                |3.3|2.2|
