@@ -2,6 +2,8 @@
 
 from datetime import datetime
 import numpy as np
+from sys import stderr
+
 settings = {'num_lines': 51,
             'pos_tol':  1e-2,
             'gap_tol': 0.05,
@@ -52,4 +54,3 @@ def convertSpin(S):
     '''
     return np.array([([s[0]*np.sin(s[1])*np.cos(s[2]), s[0]*np.sin(s[1])
                            * np.sin(s[2]), s[0]*np.cos(s[1])])for s in S])
-    
