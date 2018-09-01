@@ -9,14 +9,14 @@ from TI_Film import Hamiltonian
 from TopoInvCalc import Calc, TopoOrder
 
 
-def Run_SpinZ(_N, _J, _i, _j, Phase, Delta=3, CONST=CONST_HZL):
+def Run_SpinZ(_N, _J, _i, _j, Phase, Delta=3, CONST=CONST_HZL, settings=settings):
     '''
     This func calculate the system with uniform spin distribution in Z-direction.
     Use default constants from Hai-Zhou Lu's paper.
     '''
     print("Start Calc: N=%d, J=%.3f" % (int(_N), _J))
     h = Hamiltonian(N=int(_N), J=_J, Delta=Delta, **CONST)
-    res = Calc(h, CalcZ2=True, LogOut=False, settings=settings_strict)
+    res = Calc(h, CalcZ2=True, LogOut=False, settings=settings)
     Phase[_i][_j] = TopoOrder(res)
     print("End Calc: N=%d, J=%.3f; Res=%d" % (int(_N), _J, TopoOrder(res)))
 
