@@ -1,4 +1,4 @@
-# These file defines several "Run" funcs used in the 
+# These file defines several "Run" funcs used in the
 # calculation of Phase Diagram.
 
 import numpy as np
@@ -37,7 +37,7 @@ def Run_Mirror(_T, _J, _i, _j, Phase, N=20, n=None, Delta=3, CONST=CONST_HZL):
         _S[N-i-1, 2] = np.pi
     S = convertSpin(_S)
 
-    h = Hamiltonian(N=N, J=_J, S=S)
+    h = Hamiltonian(N=N, J=_J, S=S, Delta=Delta, **CONST)
     res = Calc(h, CalcZ2=True, LogOut=False, settings=settings)
     Phase[_i][_j] = TopoOrder(res)
 
@@ -59,7 +59,7 @@ def Run_Inv(_T, _J, _i, _j, Phase, N=20, n=None, Delta=3, CONST=CONST_HZL):
         _S[i, 1], _S[N-i-1, 1] = _T, _T
     S = convertSpin(_S)
 
-    h = Hamiltonian(N=N, J=_J, S=S)
+    h = Hamiltonian(N=N, J=_J, S=S, Delta=Delta, **CONST)
     res = Calc(h, CalcZ2=True, LogOut=False, settings=settings)
     Phase[_i][_j] = TopoOrder(res)
 
@@ -82,7 +82,7 @@ def Run_M_I(_T, _J, _i, _j, Phase, N=20, n=None, Delta=3, CONST=CONST_HZL):
         _S[i, 1], _S[N-i-1, 1] = _T, np.pi-_T
     S = convertSpin(_S)
 
-    h = Hamiltonian(N=N, J=_J, S=S)
+    h = Hamiltonian(N=N, J=_J, S=S, Delta=Delta, **CONST)
     res = Calc(h, CalcZ2=True, LogOut=False, settings=settings)
     Phase[_i][_j] = TopoOrder(res)
 
