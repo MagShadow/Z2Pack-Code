@@ -41,6 +41,13 @@ CONST_HZL = {  # Interesting!!!!!
     "M": 0.28, "B1": 1.5, "B2": -54.1
 }
 
+# Consts from Haijun Zhang 2009
+CONST_FP = {  # Interesting!!!!!
+    "A1": 3.3, "A2": 4.1, "C": -0.0068, "D1": 1.2, "D2": -30.1,
+    "M": 0.28, "B1": 1.5, "B2": -54.1
+}
+
+
 def nt():
     '''
     Format the time.

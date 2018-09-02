@@ -1,7 +1,7 @@
 import z2pack
 import numpy as np
 import matplotlib as mpl
-# mpl.use("Agg")
+mpl.use("Agg")
 from matplotlib import pyplot as plt
 import os
 import logging
