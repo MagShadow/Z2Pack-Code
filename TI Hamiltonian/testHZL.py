@@ -25,17 +25,17 @@ def read(filename="PD_HZL_Delta_3_18-08-26-17-07-00.txt"):
 
 if __name__ == '__main__':
     now = nt()
-    File_1 = "PD_HZL_D3_Strict_"+now
-    File_2 = "PD_HZL_D3.333_Strict_"+now
-    func1 = partial(Run_SpinZ, Delta=3)
-    func2 = partial(Run_SpinZ, Delta=3.333)
+    File_1 = "PD_HZL_D3_"+now
+    # File_2 = "PD_HZL_D3.189_"+now
+    func1 = partial(Run_SpinZ, Delta=3,settings=settings)
+    # func2 = partial(Run_SpinZ, Delta=3.189,settings=settings)
 
+    # PD_2 = PhaseDiag().run(func2, 3, 20, 18, 0, 0.03, 16, "N", "J")
+    # PD_2.write(filename=File_2)
     PD_1 = PhaseDiag().run(func1, 3, 20, 18, 0, 0.03, 16, "N", "J")
     PD_1.write(filename=File_1)
-    PD_2 = PhaseDiag().run(func2, 3, 20, 18, 0, 0.03, 16, "N", "J")
-    PD_2.write(filename=File_2)
 
-    PD_1.draw(title="PhaseDiag of N & J, Delta=$3\AA$, Spin-z\nParameters from Hai-Zhou Lu's paper.(Strict)",
+    PD_1.draw(title="PhaseDiag of N & J, Delta=$3\AA$, Spin-z\nParameters from Hai-Zhou Lu's paper.",
               xlabel="# of Layers", ylabel="$J(\\rm eV)$", filename=File_1)
-    PD_2.draw(title="PhaseDiag of N & J, Delta=$3.333\AA$, Spin-z\nParameters from Hai-Zhou Lu's paper.(Strict)",
-              xlabel="# of Layers", ylabel="$J(\\rm eV)$", filename=File_2)
+    # PD_2.draw(title="PhaseDiag of N & J, Delta=$3.189\AA$, Spin-z\nParameters from Hai-Zhou Lu's paper.",
+    #           xlabel="# of Layers", ylabel="$J(\\rm eV)$", filename=File_2)
