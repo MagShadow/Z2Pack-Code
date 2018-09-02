@@ -40,6 +40,7 @@ def PT_SpinZ(_N, _J_Max, _i, _j, Phase, _J_Min=0,  _J_tol=1e-4, Delta=3.189, CON
             elif T_M == T_L:
                 L = M
             else:
+                Phase[_i][_j] = R
                 raise Exception("Middle result different with either!")
         Phase[_i][_j] = R
         print("===>End Calc: N=%d, phase transition at %.3f" %
@@ -50,8 +51,8 @@ def PT_SpinZ(_N, _J_Max, _i, _j, Phase, _J_Min=0,  _J_tol=1e-4, Delta=3.189, CON
 if __name__ == "__main__":
     now = nt()
     File_1 = "PT_D3.189_HZL_SpinZ"+now
-    func1 = partial(PT_SpinZ, _J_Min=0, _J_tol=1e-4,
+    func1 = partial(PT_SpinZ, _J_Min=0, _J_tol=1e-5,
                     Delta=3.189, settings=settings)
 
-    PD_1 = PhaseDiag().run(func1, 3, 20, 18, 0.05, 0.05, 1, "N", "J")
+    PD_1 = PhaseDiag().run(func1, 3, 20, 18, 0.1, 0.1, 1, "N", "J")
     PD_1.write(filename=File_1)
