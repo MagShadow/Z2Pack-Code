@@ -135,7 +135,7 @@ if __name__ == '__main__':
     # PD_1 = PhaseDiag().run(func1, 3, 20, 18, 0, 0.03, 16, "N", "J")
     PD.write(filename=File)
 
-    PD.draw(title="PhaseDiag of N & J, Delta=$1.9134\AA$, Spin-z\nParameters from Hai-Jun Zhang's paper.",
+    PD.draw(title="PhaseDiag of N & J, Delta=$1.9134\AA$, Spin-z\nParameters from Hai-Zhou Lu's paper.",
             xlabel="# of Layers", ylabel="$J(\\rm eV)$", filename=File)
     # PD_2.draw(title="PhaseDiag of N & J, Delta=$3.189\AA$, Spin-z\nParameters from Hai-Zhou Lu's paper.",
     #           xlabel="# of Layers", ylabel="$J(\\rm eV)$", filename=File_2)
