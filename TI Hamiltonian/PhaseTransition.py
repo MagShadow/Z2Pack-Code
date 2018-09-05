@@ -52,7 +52,7 @@ if __name__ == "__main__":
     now = nt()
     File_1 = "PT_D1.9134_HZL_SpinZ"+now
     func1 = partial(PT_SpinZ, _J_Min=0, _J_tol=1e-5,
-                    Delta=3.189, settings=settings)
+                    Delta=1.9134, settings=settings)
 
-    PD_1 = PhaseDiag().run(func1, 3, 20, 18, 0.1, 0.1, 1, "N", "J")
+    PD_1 = PhaseDiag().run(func1, 10, 35, 6, 0.1, 0.1, 1, "N", "J")
     PD_1.write(filename=File_1)
