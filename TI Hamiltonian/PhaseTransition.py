@@ -50,7 +50,7 @@ def PT_SpinZ(_N, _J_Max, _i, _j, Phase, _J_Min=0,  _J_tol=1e-4, Delta=3.189, CON
 
 if __name__ == "__main__":
     now = nt()
-    File_1 = "PT_D3.189_HZL_SpinZ"+now
+    File_1 = "PT_D1.9134_HZL_SpinZ"+now
     func1 = partial(PT_SpinZ, _J_Min=0, _J_tol=1e-5,
                     Delta=3.189, settings=settings)
 

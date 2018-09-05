@@ -19,6 +19,7 @@ from multiprocessing import Lock, Pool, Queue, Manager
 from TI_Film import Hamiltonian, Eig
 import TopoInvCalc as TIC
 
+
 settings = {'num_lines': 51,
             'pos_tol':  1e-2,
             'gap_tol': 0.05,
