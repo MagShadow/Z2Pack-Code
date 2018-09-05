@@ -1,11 +1,49 @@
 import numpy as np
 from itertools import product
 from functools import partial
+# 在服务器端没有DISPLAY资源，因此必须换成无交互的后端。默认为"TkAgg"。
+import matplotlib as mpl
+mpl.use("Agg")
+from matplotlib import pyplot as plt
 
 from PhaseDiagram import PhaseDiag
 from _utils import nt, convertSpin, settings, settings_strict, CONST_HJZ, CONST_HZL
 from TI_Film import Hamiltonian, plotLine
 from TopoInvCalc import Calc, TopoOrder
+
+
+def read_point(filename="Poster_PT_D3.189_HZL_SpinZ18-09-02-02-08-42.txt"):
+    PD = PhaseDiag()
+    PD.read(filename)
+    return [l[0] for l in PD.data]
+
+
+def draw(PT, filename="Poster_PT"):
+    height = 0.04
+
+    PT = np.array([x if (x > 0) and (x < height) else height for x in PT])
+    X = np.linspace(3, 20, 18, endpoint=True, dtype=int)
+    X1 = np.linspace(3, 19, 9, endpoint=True, dtype=int)
+    X2 = np.linspace(4, 20, 9, endpoint=True, dtype=int)
+    Y1 = [PT[i-3] for i in X1]
+    Y2 = [PT[i-3] for i in X2]
+    Y = np.array([height-x for x in PT])
+    # print(X, Y)
+    fig, ax = plt.subplots()
+    plt.bar(X1, Y1, width=1, facecolor="green")
+    plt.bar(X2, Y2, width=1, facecolor="red")
+    plt.bar(X, Y, width=1, bottom=PT, facecolor="blue")
+    plt.xlim(2.5, 20.5)
+    plt.ylim(0, height)
+    plt.title("PhaseDiag of N & J, Delta=$3.189\AA$")
+    plt.xlabel("# of Layers")
+    plt.ylabel("$J(\\rm eV)$")
+    cmap = mpl.colors.ListedColormap(["r", "g", "b", "c"])
+    norm = mpl.colors.BoundaryNorm(list(range(5)), cmap.N)
+    ax2 = fig.add_axes([0.92, 0.1, 0.03, 0.8])
+    mpl.colorbar.ColorbarBase(ax2, cmap=cmap, norm=norm)
+    # plt.show()
+    plt.savefig("PT_D3.189.png")
 
 
 def PT_SpinZ(_N, _J_Max, _i, _j, Phase, _J_Min=0,  _J_tol=1e-4, Delta=3.189, CONST=CONST_HZL, settings=settings):

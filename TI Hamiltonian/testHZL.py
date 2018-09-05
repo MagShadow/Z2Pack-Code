@@ -97,45 +97,51 @@ def CalcGap():
         "M": 0.28, "B1": 1.5, "B2": -54.1
     }
 
-    N_min, N_max, J = 5, 30, 0.00
-    Gap = np.zeros([N_max-N_min+1], dtype=float)
-    for N in range(N_min, N_max+1):
+    N_min, N_max, Step, J = 10, 35, 5, 0.00
+    L = int((N_max-N_min)/Step+1)
+    Gap = np.zeros([L, ], dtype=float)
+    X = np.linspace(N_min, N_max, num=L, endpoint=True, dtype=int)
+    x = list(range(int(N_min/Step), int(N_max/Step+1)))
+    for i in range(L):
         # By Default it is Spin-Z
-        h = Hamiltonian(N=N, J=J, Delta=1.9134, **TEST_HZL)
-        eig = np.array([x.real for x in (linalg.eig(h(0, 0))[0])])
+        N=X[i]
+        h=Hamiltonian(N=N, J=J, Delta=1.9134, **TEST_HZL)
+        eig=np.array([x.real for x in (linalg.eig(h(0, 0))[0])])
         eig.sort()
-        Gap[N-N_min] = eig[2*N]-eig[2*N-1]
+        Gap[i]=eig[2*N]-eig[2*N-1]
+        print(Gap[i])
 
     plt.subplot()
-    plt.plot(list(range(N_min, N_max+1)), Gap*1000)
-    plt.xlabel(r"$N$")
+    plt.plot(x, Gap*1000)
+    plt.scatter(x, Gap*1000)
+    plt.xlabel(r"$Thickness(QL)$")
     plt.ylabel(r"$Gap(\rm meV)$")
     plt.title("Gap vs Thickness, No Spin")
-    plt.savefig("Gap_vs_Thickness_No_Spin_D1.9134.png")
+    plt.savefig("Gap_vs_Thickness_10_35_D1.9134.png")
     return
 
 
 if __name__ == '__main__':
-    # CalcGap()
-    now = nt()
-    File = "PD_SpinZ D1.9134_HJZ"+now
-    # PD = read2("PD_HZL_Inv_N15_18-09-02-14-27-26.txt")
-    # PD.draw(title="PhaseDiag of $\\theta$ & J, N=15, Delta=$3.189\AA$, Inversion",
-    #         xlabel="$\\theta$", ylabel="$J(\\rm eV)$", filename=File_2)
-    # print(PT, Y1, Y2)
-    # PD.draw(title="PhaseDiag of N & J, Delta=$3.189\AA$, Spin-z",
-    #         xlabel="# of Layers", ylabel="$J(\\rm eV)$", filename=Filename)
+    CalcGap()
+    # now = nt()
+    # File = "PD_SpinZ D1.9134_HJZ"+now
+    # # PD = read2("PD_HZL_Inv_N15_18-09-02-14-27-26.txt")
+    # # PD.draw(title="PhaseDiag of $\\theta$ & J, N=15, Delta=$3.189\AA$, Inversion",
+    # #         xlabel="$\\theta$", ylabel="$J(\\rm eV)$", filename=File_2)
+    # # print(PT, Y1, Y2)
+    # # PD.draw(title="PhaseDiag of N & J, Delta=$3.189\AA$, Spin-z",
+    # #         xlabel="# of Layers", ylabel="$J(\\rm eV)$", filename=Filename)
 
-    func = partial(Run_SpinZ, Delta=1.9134, CONST=CONST_HJZ, settings=settings)
-    # func2 = partial(Run_SpinZ, Delta=3.189, settings=settings)
+    # func = partial(Run_SpinZ, Delta=1.9134, CONST=CONST_HJZ, settings=settings)
+    # # func2 = partial(Run_SpinZ, Delta=3.189, settings=settings)
 
-    PD = PhaseDiag().run(func, 15, 30, 4, 0, 0.02, 3, "N", "J")
-    # PD_2 = PhaseDiag().run(func2, 3, 20, 18, 0, 0.03, 16, "N", "J")
-    # PD_2.write(filename=File_2)
-    # PD_1 = PhaseDiag().run(func1, 3, 20, 18, 0, 0.03, 16, "N", "J")
-    PD.write(filename=File)
+    # PD = PhaseDiag().run(func, 15, 30, 4, 0, 0.02, 3, "N", "J")
+    # # PD_2 = PhaseDiag().run(func2, 3, 20, 18, 0, 0.03, 16, "N", "J")
+    # # PD_2.write(filename=File_2)
+    # # PD_1 = PhaseDiag().run(func1, 3, 20, 18, 0, 0.03, 16, "N", "J")
+    # PD.write(filename=File)
 
-    PD.draw(title="PhaseDiag of N & J, Delta=$1.9134\AA$, Spin-z\nParameters from Hai-Zhou Lu's paper.",
-            xlabel="# of Layers", ylabel="$J(\\rm eV)$", filename=File)
-    # PD_2.draw(title="PhaseDiag of N & J, Delta=$3.189\AA$, Spin-z\nParameters from Hai-Zhou Lu's paper.",
-    #           xlabel="# of Layers", ylabel="$J(\\rm eV)$", filename=File_2)
+    # PD.draw(title="PhaseDiag of N & J, Delta=$1.9134\AA$, Spin-z\nParameters from Hai-Zhou Lu's paper.",
+    #         xlabel="# of Layers", ylabel="$J(\\rm eV)$", filename=File)
+    # # PD_2.draw(title="PhaseDiag of N & J, Delta=$3.189\AA$, Spin-z\nParameters from Hai-Zhou Lu's paper.",
+    # #           xlabel="# of Layers", ylabel="$J(\\rm eV)$", filename=File_2)
