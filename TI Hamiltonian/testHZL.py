@@ -47,13 +47,6 @@ def read2(filename="Poster_D3.189_SpinZ.txt"):
 def read3(filename="Poster_PT_D3.189_HZL_SpinZ18-09-02-02-08-42.txt"):
     PD = PhaseDiag()
     PD.read(filename)
-    X_L, X_H, X_N, X_Name = PD.info["X_L"], PD.info["X_H"], PD.info["X_N"], PD.info["X_Name"]
-    Y_L, Y_H, Y_N, Y_Name = PD.info["Y_L"], PD.info["Y_H"], PD.info["Y_N"], PD.info["Y_Name"]
-    # Y_L, Y_H, Y_N = 0, 0.02, 11
-    X = np.linspace(X_L, X_H, num=X_N, endpoint=True)
-    Y = np.linspace(Y_L, Y_H, num=Y_N, endpoint=True)
-    # for i, j in product(list(range(X_N)), list(range(Y_N))):
-    #     PD.data[i][j] = min(PD.data[i][j], 2)
     return [l[0] for l in PD.data]
 
 
@@ -97,21 +90,32 @@ def CalcGap():
         "M": 0.28, "B1": 1.5, "B2": -54.1
     }
 
-    N_min, N_max, J = 5, 30, 0.00
-    Gap = np.zeros([N_max-N_min+1], dtype=float)
-    for N in range(N_min, N_max+1):
+    N_min, N_max, Step, J = 10, 35, 5, 0.00
+    L = int((N_max-N_min)/Step+1)
+    Gap = np.zeros([L, ], dtype=float)
+    X = np.linspace(N_min, N_max, num=L, endpoint=True, dtype=int)
+    x = list(range(int(N_min/Step), int(N_max/Step+1)))
+    for i in range(L):
         # By Default it is Spin-Z
+        N = X[i]
         h = Hamiltonian(N=N, J=J, Delta=1.9134, **TEST_HZL)
         eig = np.array([x.real for x in (linalg.eig(h(0, 0))[0])])
         eig.sort()
-        Gap[N-N_min] = eig[2*N]-eig[2*N-1]
+        Gap[i] = eig[2*N]-eig[2*N-1]
+        # print(Gap[i])
 
     plt.subplot()
-    plt.plot(list(range(N_min, N_max+1)), Gap*1000)
-    plt.xlabel(r"$N$")
-    plt.ylabel(r"$Gap(\rm meV)$")
-    plt.title("Gap vs Thickness, No Spin")
-    plt.savefig("Gap_vs_Thickness_No_Spin_D1.9134.png")
+    plt.plot(x, Gap, label=r"$\Delta_H$")
+    plt.scatter(x, Gap)
+
+    J = np.array(read3("PT_D1.9134_HZL_SpinZ18-09-05-08-46-02.txt"))*2
+    plt.plot(x, J, color="red", label=r"$2\times J_c$")
+    plt.scatter(x, J, color="red", marker="^")
+    plt.legend(loc='upper right')
+    plt.xlabel(r"$Thickness (\rm QL)$")
+    plt.ylabel(r"$Gap(\rm eV)$")
+    plt.title(r"Critical $J$ & Hybridization Gap vs Thickness")
+    plt.savefig("Spin_Hybrid_vsThickness_10_35_D1.9134.png")
     return
 
 
