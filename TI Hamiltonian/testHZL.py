@@ -120,26 +120,26 @@ def CalcGap():
 
 
 if __name__ == '__main__':
-    CalcGap()
-    # now = nt()
-    # File = "PD_SpinZ D1.9134_HJZ"+now
-    # # PD = read2("PD_HZL_Inv_N15_18-09-02-14-27-26.txt")
-    # # PD.draw(title="PhaseDiag of $\\theta$ & J, N=15, Delta=$3.189\AA$, Inversion",
-    # #         xlabel="$\\theta$", ylabel="$J(\\rm eV)$", filename=File_2)
-    # # print(PT, Y1, Y2)
-    # # PD.draw(title="PhaseDiag of N & J, Delta=$3.189\AA$, Spin-z",
-    # #         xlabel="# of Layers", ylabel="$J(\\rm eV)$", filename=Filename)
+    # CalcGap()
+    now = nt()
+    File = "PD_SpinZ D1.9134_HJZ"+now
+    # PD = read2("PD_HZL_Inv_N15_18-09-02-14-27-26.txt")
+    # PD.draw(title="PhaseDiag of $\\theta$ & J, N=15, Delta=$3.189\AA$, Inversion",
+    #         xlabel="$\\theta$", ylabel="$J(\\rm eV)$", filename=File_2)
+    # print(PT, Y1, Y2)
+    # PD.draw(title="PhaseDiag of N & J, Delta=$3.189\AA$, Spin-z",
+    #         xlabel="# of Layers", ylabel="$J(\\rm eV)$", filename=Filename)
 
-    # func = partial(Run_SpinZ, Delta=1.9134, CONST=CONST_HJZ, settings=settings)
-    # # func2 = partial(Run_SpinZ, Delta=3.189, settings=settings)
+    func = partial(Run_SpinZ, Delta=1.9134, CONST=CONST_HZL, settings=settings)
+    # func2 = partial(Run_SpinZ, Delta=3.189, settings=settings)
 
-    # PD = PhaseDiag().run(func, 15, 30, 4, 0, 0.02, 3, "N", "J")
-    # # PD_2 = PhaseDiag().run(func2, 3, 20, 18, 0, 0.03, 16, "N", "J")
-    # # PD_2.write(filename=File_2)
-    # # PD_1 = PhaseDiag().run(func1, 3, 20, 18, 0, 0.03, 16, "N", "J")
-    # PD.write(filename=File)
+    PD = PhaseDiag().run(func, 10, 45, 8, 0, 0.025, 11, "N", "J")
+    # PD_2 = PhaseDiag().run(func2, 3, 20, 18, 0, 0.03, 16, "N", "J")
+    # PD_2.write(filename=File_2)
+    # PD_1 = PhaseDiag().run(func1, 3, 20, 18, 0, 0.03, 16, "N", "J")
+    PD.write(filename=File)
 
-    # PD.draw(title="PhaseDiag of N & J, Delta=$1.9134\AA$, Spin-z\nParameters from Hai-Zhou Lu's paper.",
-    #         xlabel="# of Layers", ylabel="$J(\\rm eV)$", filename=File)
-    # # PD_2.draw(title="PhaseDiag of N & J, Delta=$3.189\AA$, Spin-z\nParameters from Hai-Zhou Lu's paper.",
-    # #           xlabel="# of Layers", ylabel="$J(\\rm eV)$", filename=File_2)
+    PD.draw(title="PhaseDiag of N & J, Delta=$1.9134\AA$, Spin-z\nParameters from Hai-Zhou Lu's paper.",
+            xlabel="# of Layers", ylabel="$J(\\rm eV)$", filename=File)
+    # PD_2.draw(title="PhaseDiag of N & J, Delta=$3.189\AA$, Spin-z\nParameters from Hai-Zhou Lu's paper.",
+    #           xlabel="# of Layers", ylabel="$J(\\rm eV)$", filename=File_2)
