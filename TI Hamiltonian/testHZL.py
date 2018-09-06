@@ -126,10 +126,10 @@ if __name__ == '__main__':
     # PD.draw(title="PhaseDiag of N & J, Delta=$3.189\AA$, Spin-z",
     #         xlabel="# of Layers", ylabel="$J(\\rm eV)$", filename=Filename)
 
-    func = partial(Run_SpinZ, Delta=1.9134, CONST=CONST_HJZ, settings=settings)
+    func = partial(Run_SpinZ, Delta=1.9134, CONST=CONST_HZL, settings=settings)
     # func2 = partial(Run_SpinZ, Delta=3.189, settings=settings)
 
-    PD = PhaseDiag().run(func, 15, 30, 4, 0, 0.02, 3, "N", "J")
+    PD = PhaseDiag().run(func, 10, 45, 8, 0, 0.025, 11, "N", "J")
     # PD_2 = PhaseDiag().run(func2, 3, 20, 18, 0, 0.03, 16, "N", "J")
     # PD_2.write(filename=File_2)
     # PD_1 = PhaseDiag().run(func1, 3, 20, 18, 0, 0.03, 16, "N", "J")
